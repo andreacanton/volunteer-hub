@@ -95,27 +95,27 @@
   - Acceptance: `configureLogging()` function exported and working
 
 ### Phase 4: Database Setup (Goal: Initialize SQLite with bun:sqlite)
-- [ ] T4.1: Create database connection singleton (Complexity: Medium)
+- [x] T4.1: Create database connection singleton (Complexity: Medium)
   - Description: Create src/database/connection.ts with getDb() function
   - Dependencies: T3.3
   - Acceptance: Exports working getDb() function
 
-- [ ] T4.2: Create database initialization logic (Complexity: Medium)
+- [x] T4.2: Create database initialization logic (Complexity: Medium)
   - Description: Create src/database/init.ts with directory creation and WAL mode
   - Dependencies: T4.1
   - Acceptance: Database file created on startup, WAL mode enabled
 
-- [ ] T4.3: Create migration runner scaffold (Complexity: Medium)
+- [x] T4.3: Create migration runner scaffold (Complexity: Medium)
   - Description: Create src/database/migrate.ts to read and execute SQL files
   - Dependencies: T4.1
   - Acceptance: `bun run migrate` executes without error
 
-- [ ] T4.4: Create initial migration (Complexity: Simple)
+- [x] T4.4: Create initial migration (Complexity: Simple)
   - Description: Create migrations/001_init_migrations.sql for schema_migrations table
   - Dependencies: T4.3
   - Acceptance: Migration table created after running migrate
 
-- [ ] T4.5: Create database index export (Complexity: Simple)
+- [x] T4.5: Create database index export (Complexity: Simple)
   - Description: Create src/database/index.ts for clean imports
   - Dependencies: T4.1, T4.2
   - Acceptance: Clean import from database module works
@@ -210,10 +210,10 @@
   - Acceptance: `bun run lint` exits with code 0
 
 ## Rollup
-- Open Tasks: 19
-- Completed Tasks: 16
+- Open Tasks: 14
+- Completed Tasks: 21
 - Blockers: none
-- Next Priority: T4.1
+- Next Priority: T5.1
 
 ## Notes
 - Keep tasks aligned with Plan.md scope; do not introduce new scope without review.

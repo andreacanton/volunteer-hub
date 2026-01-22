@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "bun --hot src/index.ts",
     "start": "bun src/index.ts",
+    "migrate": "bun src/database/migrate.ts",
     "test": "bun test",
     "lint": "eslint src/ tests/",
     "format": "prettier --write src/ tests/"

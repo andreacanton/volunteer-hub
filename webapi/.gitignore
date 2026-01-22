@@ -6,8 +6,8 @@ out
 dist
 *.tgz
 
-# database
-database/
+# database (data files only, not src/database/ code)
+/database/
 *.db
 *.db-shm
 *.db-wal
