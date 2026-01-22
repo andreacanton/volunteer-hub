@@ -21,24 +21,24 @@ List phases in order. Each phase contains tasks with IDs.
 
 ### Phase 1: <Name> (Goal: <short objective>)
 - [ ] T1: <Task title> (Complexity: Simple|Medium|Complex)
-  - Description: <what to do>
-  - Dependencies: <e.g., none | T0>
-  - Acceptance: <how to verify>
-  - Notes: <optional>
+- Description: <what to do>
+- Dependencies: <e.g., none | T0>
+- Acceptance: <how to verify>
+- Notes: <optional>
 
 ### Phase 2: <Name> (Goal: <short objective>)
 - [ ] T2: <Task title> (Complexity: Simple|Medium|Complex)
-  - Description: <what to do>
-  - Dependencies: <e.g., T1>
-  - Acceptance: <how to verify>
-  - Notes: <optional>
+- Description: <what to do>
+- Dependencies: <e.g., T1>
+- Acceptance: <how to verify>
+- Notes: <optional>
 
 ### Phase 3: <Name> (Goal: <short objective>)
 - [ ] T3: <Task title> (Complexity: Simple|Medium|Complex)
-  - Description: <what to do>
-  - Dependencies: <e.g., T1, T2>
-  - Acceptance: <how to verify>
-  - Notes: <optional>
+- Description: <what to do>
+- Dependencies: <e.g., T1, T2>
+- Acceptance: <how to verify>
+- Notes: <optional>
 
 ### Phase ....
 
