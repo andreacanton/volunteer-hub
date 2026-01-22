@@ -74,22 +74,22 @@
   - Acceptance: Directory exists with sample test
 
 ### Phase 3: Environment Configuration (Goal: Secure and validate configuration)
-- [ ] T3.1: Create .env.example (Complexity: Simple)
+- [x] T3.1: Create .env.example (Complexity: Simple)
   - Description: Document all required environment variables with descriptions
   - Dependencies: T1.6
   - Acceptance: File lists all env vars (JWT_SECRET, PORT, NODE_ENV, etc.)
 
-- [ ] T3.2: Create environment validation module (Complexity: Medium)
+- [x] T3.2: Create environment validation module (Complexity: Medium)
   - Description: Create src/config/env.ts using TypeBox schema for validation
   - Dependencies: T2.3
   - Acceptance: Exports validated config object, fails on missing JWT_SECRET
 
-- [ ] T3.3: Create config index (Complexity: Simple)
+- [x] T3.3: Create config index (Complexity: Simple)
   - Description: Create src/config/index.ts that exports typed configuration
   - Dependencies: T3.2
   - Acceptance: `import { config } from './config'` works
 
-- [ ] T3.4: Create LogTape configuration (Complexity: Medium)
+- [x] T3.4: Create LogTape configuration (Complexity: Medium)
   - Description: Create src/config/logger.ts with console sink and hierarchical categories
   - Dependencies: T3.2
   - Acceptance: `configureLogging()` function exported and working
@@ -210,10 +210,10 @@
   - Acceptance: `bun run lint` exits with code 0
 
 ## Rollup
-- Open Tasks: 23
-- Completed Tasks: 12
+- Open Tasks: 19
+- Completed Tasks: 16
 - Blockers: none
-- Next Priority: T3.1
+- Next Priority: T4.1
 
 ## Notes
 - Keep tasks aligned with Plan.md scope; do not introduce new scope without review.
