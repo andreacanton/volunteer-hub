@@ -16,6 +16,8 @@ export default [
         Bun: "readonly",
         console: "readonly",
         process: "readonly",
+        URL: "readonly",
+        performance: "readonly",
       },
     },
     plugins: {

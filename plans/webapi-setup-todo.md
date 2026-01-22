@@ -121,32 +121,32 @@
   - Acceptance: Clean import from database module works
 
 ### Phase 5: Core Middleware (Goal: Implement authentication and error handling)
-- [ ] T5.1: Create standardized API response helpers (Complexity: Simple)
+- [x] T5.1: Create standardized API response helpers (Complexity: Simple)
   - Description: Create src/utils/response.ts with success() and error() helpers
   - Dependencies: T2.3
   - Acceptance: Helpers return correct JSON structure with timestamp
 
-- [ ] T5.2: Create error handler middleware (Complexity: Medium)
+- [x] T5.2: Create error handler middleware (Complexity: Medium)
   - Description: Create src/middleware/errorHandler.ts to catch and format errors
   - Dependencies: T5.1
   - Acceptance: All errors transformed to standard API response format
 
-- [ ] T5.3: Create request logging middleware (Complexity: Medium)
+- [x] T5.3: Create request logging middleware (Complexity: Medium)
   - Description: Create src/middleware/logger.ts using LogTape
   - Dependencies: T3.4
   - Acceptance: Logs method, path, status, duration for each request
 
-- [ ] T5.4: Create JWT authentication plugin (Complexity: Medium)
+- [x] T5.4: Create JWT authentication plugin (Complexity: Medium)
   - Description: Create src/middleware/jwt.ts with @elysiajs/jwt configuration
   - Dependencies: T3.3
   - Acceptance: JWT plugin configured with secret from env
 
-- [ ] T5.5: Create auth guard middleware (Complexity: Medium)
+- [x] T5.5: Create auth guard middleware (Complexity: Medium)
   - Description: Create src/middleware/authGuard.ts to protect routes
   - Dependencies: T5.4
   - Acceptance: Rejects requests without valid Bearer tokens (401)
 
-- [ ] T5.6: Create middleware index export (Complexity: Simple)
+- [x] T5.6: Create middleware index export (Complexity: Simple)
   - Description: Create src/middleware/index.ts for clean imports
   - Dependencies: T5.2, T5.3, T5.4, T5.5
   - Acceptance: Clean imports from middleware module work
@@ -210,10 +210,10 @@
   - Acceptance: `bun run lint` exits with code 0
 
 ## Rollup
-- Open Tasks: 14
-- Completed Tasks: 21
+- Open Tasks: 8
+- Completed Tasks: 27
 - Blockers: none
-- Next Priority: T5.1
+- Next Priority: T6.1
 
 ## Notes
 - Keep tasks aligned with Plan.md scope; do not introduce new scope without review.
