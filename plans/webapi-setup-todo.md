@@ -43,32 +43,32 @@
   - Acceptance: Sensitive files excluded from git
 
 ### Phase 2: Folder Structure Setup (Goal: Establish feature-based architecture)
-- [ ] T2.1: Create src directory with entry point (Complexity: Simple)
+- [x] T2.1: Create src directory with entry point (Complexity: Simple)
   - Description: Create webapi/src/index.ts with placeholder
   - Dependencies: T1.4
   - Acceptance: File exists with placeholder code
 
-- [ ] T2.2: Create modules directory structure (Complexity: Simple)
+- [x] T2.2: Create modules directory structure (Complexity: Simple)
   - Description: Create modules/auth, modules/user, modules/health with index.ts files
   - Dependencies: T2.1
   - Acceptance: Directories exist with placeholder index.ts files
 
-- [ ] T2.3: Create shared utilities directories (Complexity: Simple)
+- [x] T2.3: Create shared utilities directories (Complexity: Simple)
   - Description: Create utils/, types/, constants/ directories
   - Dependencies: T2.1
   - Acceptance: Directories exist
 
-- [ ] T2.4: Create middleware directory (Complexity: Simple)
+- [x] T2.4: Create middleware directory (Complexity: Simple)
   - Description: Create middleware/ directory
   - Dependencies: T2.1
   - Acceptance: Directory exists
 
-- [ ] T2.5: Create database directory structure (Complexity: Simple)
+- [x] T2.5: Create database directory structure (Complexity: Simple)
   - Description: Create src/database/, database/, migrations/ directories
   - Dependencies: T2.1
   - Acceptance: Directories exist
 
-- [ ] T2.6: Create tests directory structure (Complexity: Simple)
+- [x] T2.6: Create tests directory structure (Complexity: Simple)
   - Description: Create tests/ directory with sample test file
   - Dependencies: T2.1
   - Acceptance: Directory exists with sample test
@@ -210,10 +210,10 @@
   - Acceptance: `bun run lint` exits with code 0
 
 ## Rollup
-- Open Tasks: 29
-- Completed Tasks: 6
+- Open Tasks: 23
+- Completed Tasks: 12
 - Blockers: none
-- Next Priority: T2.1
+- Next Priority: T3.1
 
 ## Notes
 - Keep tasks aligned with Plan.md scope; do not introduce new scope without review.
