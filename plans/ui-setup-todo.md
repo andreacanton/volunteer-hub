@@ -30,13 +30,13 @@
   - Notes: None
 
 ### Phase 2: Dependencies Setup (Goal: Install and configure core packages)
-- [ ] T2.1: Add dependencies to pubspec.yaml (Complexity: Simple)
+- [x] T2.1: Add dependencies to pubspec.yaml (Complexity: Simple)
   - Description: Add dio, flutter_riverpod, flutter_secure_storage, and related packages
   - Dependencies: T1.1
   - Acceptance: `flutter pub get` succeeds
   - Notes: Packages: dio, flutter_riverpod, riverpod_annotation, flutter_secure_storage
 
-- [ ] T2.2: Create environment configuration (Complexity: Simple)
+- [x] T2.2: Create environment configuration (Complexity: Simple)
   - Description: Create env.dart with dev/prod API URL configuration
   - Dependencies: T2.1
   - Acceptance: Dev URL is `http://localhost:3000/api/v1/`, prod URL configurable
@@ -131,10 +131,10 @@
   - Notes: Requires backend running; document any issues found
 
 ## Rollup
-- Open Tasks: 15
-- Completed Tasks: 3
+- Open Tasks: 13
+- Completed Tasks: 5
 - Blockers: none
-- Next Priority: T2.1
+- Next Priority: T3.1
 
 ## Notes
 - Backend auth endpoint not yet implemented; UI work can proceed with planned contract
