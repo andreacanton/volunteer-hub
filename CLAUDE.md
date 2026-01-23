@@ -1,7 +1,5 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## Project Overview
 
 Volunteer Attendance Management - a full-stack application for coordinating charity volunteer services. Volunteers subscribe to service shifts (Evening, Breakfast, Cooks, Logistics) on specific days, set attendance status, and coordinators manage staffing levels.
@@ -10,45 +8,113 @@ Volunteer Attendance Management - a full-stack application for coordinating char
 
 - **Backend**: Bun.js + Elysia (TypeScript), SQLite with bun:sqlite
 - **Frontend**: Flutter (Dart) for iOS/Android
-- **Auth**: JWT tokens
-- **API**: RESTful
+- **Auth**: JWT tokens (HS256, 24h expiration)
+- **API**: RESTful with `/api/v1/` prefix
+- **Logging**: LogTape (@logtape/logtape)
 
 ## Project Structure
 
 ```
-backend/           # Bun.js + Elysia API
+webapi/            # Bun.js + Elysia API
   src/
-    routes/        # API routes
-    controllers/   # Request handlers
-    models/        # Database models
-    middleware/    # Auth, validation
-    services/      # Business logic
-  migrations/      # SQLite migrations
+    modules/       # Feature-based modules (auth/, user/, health/, etc.)
+      <module>/
+        index.ts   # Elysia instance with routes (controller)
+        service.ts # Business logic (pure functions)
+    middleware/    # Auth guard, error handler, request logger
+    config/        # Environment validation, logger setup, CORS
+    database/      # Connection singleton, init, migrations
+    utils/         # Response helpers, shared utilities
+    types/         # Shared TypeScript types
+    constants/     # Enums and constants
+    app.ts         # Main Elysia app assembly
+    index.ts       # Entry point
+  migrations/      # SQL migration files (001_*.sql, 002_*.sql)
+  database/        # SQLite database files (.gitignored)
   tests/
 
-frontend/          # Flutter mobile app
+ui/                # Flutter mobile app
   lib/
     models/        # Data models
     services/      # API client (dio)
     providers/     # State management
     screens/       # UI screens
     widgets/       # Reusable widgets
-  test/
+  tests/
+```
+
+## Backend Architecture Patterns
+
+### Elysia Conventions
+- **Feature-based modules**: Group routes, services by feature (not by layer)
+- **Elysia instance as controller**: Each module exports an Elysia instance with routes
+- **Method chaining**: Always chain route definitions (`.get().post().use()`)
+- **TypeBox for validation**: Use Elysia's `t` for request/response schemas (single source of truth)
+- **Decoupled services**: Business logic in pure functions/static methods, no Elysia context dependency
+- **Explicit extensions**: All imports must use `.ts` extension for Bun compatibility
+
+### Standard API Response Format
+```typescript
+{
+  success: boolean,
+  data: T | null,
+  error: { code: string, message: string, details?: object } | null,
+  timestamp: string  // ISO 8601
+}
+```
+
+### Error Codes
+| Code | HTTP | Description |
+|------|------|-------------|
+| VALIDATION_ERROR | 400 | Invalid request data |
+| AUTH_TOKEN_MISSING | 401 | No Authorization header |
+| AUTH_TOKEN_INVALID | 401 | Malformed or invalid token |
+| AUTH_TOKEN_EXPIRED | 401 | Token past expiration |
+| RESOURCE_NOT_FOUND | 404 | Entity not found |
+| DATABASE_ERROR | 500 | Database operation failed |
+| INTERNAL_ERROR | 500 | Unexpected server error |
+
+### Key Dependencies
+- `elysia` - Web framework
+- `@elysiajs/jwt` - JWT authentication plugin
+- `@elysiajs/cors` - CORS handling
+- `@logtape/logtape` - Structured logging with hierarchical categories
+- `bun:sqlite` - Native SQLite driver (built-in)
+- `Bun.password` - Password hashing (built-in)
+
+## Environment Variables
+
+Required in `webapi/.env`:
+```
+JWT_SECRET=<min 32 chars>
+```
+
+Optional (with defaults):
+```
+PORT=3000
+NODE_ENV=development
+JWT_EXPIRES_IN=24h
+DATABASE_PATH=./database/volunteer-hub.db
+LOG_LEVEL=info  # trace|debug|info|warning|error|fatal
 ```
 
 ## Common Commands
 
-### Backend (Bun.js)
+### Backend (webapi/)
 ```bash
-cd backend
+cd webapi
 bun install          # Install dependencies
+bun run dev          # Start dev server with hot reload
 bun run migrate      # Run database migrations
-bun run dev          # Start development server
+bun run build        # Build for production
+bun run start        # Start production server
+bun test             # Run tests
+bun run lint         # Run ESLint
 ```
 
-### Frontend (Flutter)
+### Frontend (ui/)
 ```bash
-cd frontend
+cd ui
 flutter pub get      # Get dependencies
 flutter run          # Run on connected device
 flutter run -d ios   # Run on iOS simulator
@@ -60,6 +126,7 @@ flutter test         # Run tests
 
 Core entities: User (volunteer), Service (type), DayOfWeek, ServiceGroup (Service + Day + Coordinator), Subscription (volunteer to ServiceGroup), Attendance (status per date).
 
-User roles: volunteers, coordinators (per ServiceGroup), administrators (create accounts, configure services).
+User roles: VOLUNTEER, COORDINATOR (per ServiceGroup), ADMIN (system-wide).
+
 
 
