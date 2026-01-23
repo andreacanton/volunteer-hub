@@ -11,19 +11,19 @@
 ## Phases
 
 ### Phase 1: Project Initialization (Goal: Create Flutter project with folder structure)
-- [ ] T1.1: Create Flutter project (Complexity: Simple)
+- [x] T1.1: Create Flutter project (Complexity: Simple)
   - Description: Run `flutter create` with organization `com.volunteerhub.app` in `ui/` directory
   - Dependencies: none
   - Acceptance: `flutter run` shows default app
   - Notes: Use `flutter create --org com.volunteerhub ui`
 
-- [ ] T1.2: Create folder structure (Complexity: Simple)
+- [x] T1.2: Create folder structure (Complexity: Simple)
   - Description: Clean default files and create folders: models/, services/, providers/, screens/, widgets/, config/, utils/
   - Dependencies: T1.1
   - Acceptance: All folders exist under `ui/lib/`
   - Notes: Remove default counter app code
 
-- [ ] T1.3: Configure analysis options (Complexity: Simple)
+- [x] T1.3: Configure analysis options (Complexity: Simple)
   - Description: Set up analysis_options.yaml with effective_dart lints
   - Dependencies: T1.1
   - Acceptance: `flutter analyze` passes with no issues
@@ -131,10 +131,10 @@
   - Notes: Requires backend running; document any issues found
 
 ## Rollup
-- Open Tasks: 18
-- Completed Tasks: 0
+- Open Tasks: 15
+- Completed Tasks: 3
 - Blockers: none
-- Next Priority: T1.1
+- Next Priority: T2.1
 
 ## Notes
 - Backend auth endpoint not yet implemented; UI work can proceed with planned contract
