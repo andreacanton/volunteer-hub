@@ -168,27 +168,27 @@
   - Acceptance: Tests pass with `bun test`
 
 ### Phase 7: Application Assembly (Goal: Wire everything together)
-- [ ] T7.1: Create main Elysia app instance (Complexity: Medium)
+- [x] T7.1: Create main Elysia app instance (Complexity: Medium)
   - Description: Create src/app.ts with plugins and middleware
   - Dependencies: T5.6, T6.2
   - Acceptance: App instance exported with all middleware applied
 
-- [ ] T7.2: Create entry point (Complexity: Medium)
+- [x] T7.2: Create entry point (Complexity: Medium)
   - Description: Update src/index.ts to initialize LogTape and start server
   - Dependencies: T7.1, T4.2, T3.4
   - Acceptance: `bun run dev` starts server with logging
 
-- [ ] T7.3: Add npm scripts (Complexity: Simple)
+- [x] T7.3: Add npm scripts (Complexity: Simple)
   - Description: Add dev, build, test, lint, migrate scripts to package.json
   - Dependencies: T7.2
   - Acceptance: All scripts execute successfully
 
-- [ ] T7.4: Create CORS configuration (Complexity: Simple)
+- [x] T7.4: Create CORS configuration (Complexity: Simple)
   - Description: Create src/config/cors.ts for development CORS settings
   - Dependencies: T3.3
   - Acceptance: CORS headers present in responses
 
-- [ ] T7.5: Add graceful shutdown handling (Complexity: Medium)
+- [x] T7.5: Add graceful shutdown handling (Complexity: Medium)
   - Description: Handle SIGTERM in src/index.ts to close DB connection
   - Dependencies: T7.2, T4.5
   - Acceptance: SIGTERM closes database connection gracefully
@@ -210,10 +210,10 @@
   - Acceptance: `bun run lint` exits with code 0
 
 ## Rollup
-- Open Tasks: 5
-- Completed Tasks: 30
+- Open Tasks: 3
+- Completed Tasks: 35
 - Blockers: none
-- Next Priority: T7.1
+- Next Priority: T8.1
 
 ## Notes
 - Keep tasks aligned with Plan.md scope; do not introduce new scope without review.
