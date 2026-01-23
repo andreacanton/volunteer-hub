@@ -152,17 +152,17 @@
   - Acceptance: Clean imports from middleware module work
 
 ### Phase 6: Health Module (Goal: Create first working endpoint)
-- [ ] T6.1: Create health service (Complexity: Simple)
+- [x] T6.1: Create health service (Complexity: Simple)
   - Description: Create src/modules/health/service.ts with getHealthStatus()
   - Dependencies: T2.2
   - Acceptance: Returns status, version, uptime
 
-- [ ] T6.2: Create health controller (Complexity: Medium)
+- [x] T6.2: Create health controller (Complexity: Medium)
   - Description: Create src/modules/health/index.ts with GET /health route
   - Dependencies: T6.1, T5.1
   - Acceptance: GET /api/v1/health returns 200 with correct payload
 
-- [ ] T6.3: Create health module tests (Complexity: Medium)
+- [x] T6.3: Create health module tests (Complexity: Medium)
   - Description: Create tests/modules/health.test.ts
   - Dependencies: T6.2
   - Acceptance: Tests pass with `bun test`
@@ -210,10 +210,10 @@
   - Acceptance: `bun run lint` exits with code 0
 
 ## Rollup
-- Open Tasks: 8
-- Completed Tasks: 27
+- Open Tasks: 5
+- Completed Tasks: 30
 - Blockers: none
-- Next Priority: T6.1
+- Next Priority: T7.1
 
 ## Notes
 - Keep tasks aligned with Plan.md scope; do not introduce new scope without review.
