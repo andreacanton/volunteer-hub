@@ -115,7 +115,13 @@ Expected response:
 | `bun run build` | Build for production (outputs to `./dist`) |
 | `bun run start` | Start production server (no hot-reload) |
 | `bun run migrate` | Run pending database migrations |
-| `bun test` | Run test suite with Bun's built-in test runner |
+| `bun test` | Run unit tests with Bun's built-in test runner |
+| `bun run test:bruno` | Run all Bruno integration tests |
+| `bun run test:bruno:ci` | Run Bruno tests with JUnit report for CI |
+| `bun run test:bruno:health` | Run health endpoint integration tests |
+| `bun run test:bruno:auth` | Run auth endpoint integration tests |
+| `bun run test:all` | Run all tests (unit + integration) |
+| `bun run seed:test` | Seed test users for integration tests |
 | `bun run lint` | Lint source code with ESLint |
 | `bun run format` | Format code with Prettier |
 
@@ -311,7 +317,9 @@ Responses for authentication failures:
 
 ## Testing
 
-Run the test suite:
+### Unit Tests
+
+Run the test suite with Bun's built-in test runner:
 
 ```bash
 bun test
@@ -329,14 +337,62 @@ Run specific test file:
 bun test tests/modules/health.test.ts
 ```
 
+### Integration Tests (Bruno)
+
+Integration tests use [Bruno](https://www.usebruno.com/) to test real API endpoints with a live server and database.
+
+**Setup** (one-time):
+
+```bash
+# Seed test users required by some tests
+bun run seed:test
+```
+
+**Run all integration tests**:
+
+```bash
+# Ensure API server is running first
+bun run dev
+
+# In another terminal
+bun run test:bruno
+```
+
+**Run specific test modules**:
+
+```bash
+bun run test:bruno:health    # Health check tests
+bun run test:bruno:auth      # Authentication tests
+```
+
+**Run all tests** (unit + integration):
+
+```bash
+bun run test:all
+```
+
+**CI mode with JUnit reports**:
+
+```bash
+bun run test:bruno:ci
+```
+
+For detailed information about writing and running integration tests, see [tests/bruno/README.md](tests/bruno/README.md).
+
 ### Test Structure
 
 ```
 tests/
-├── modules/           # Module-specific tests
+├── modules/           # Unit tests
 │   └── health.test.ts
 ├── middleware/        # Middleware tests (future)
 ├── utils/             # Utility tests (future)
+├── bruno/             # Integration tests
+│   ├── README.md      # Detailed Bruno test documentation
+│   ├── environments/
+│   │   └── local.bru  # Test environment config
+│   ├── Health/        # Health endpoint tests
+│   └── Auth/          # Auth endpoint tests
 └── example.test.ts    # Example test file
 ```
 

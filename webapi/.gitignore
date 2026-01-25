@@ -16,6 +16,15 @@ dist
 coverage
 *.lcov
 
+# test results
+results/
+bruno-results.json
+bruno-junit.xml
+bruno-report.html
+
+# Bruno test environment secrets
+tests/bruno/environments/test.env
+
 # logs
 logs
 _.log

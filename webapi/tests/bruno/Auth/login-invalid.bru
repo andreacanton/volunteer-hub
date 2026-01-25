@@ -1,0 +1,50 @@
+meta {
+  name: Login Invalid Credentials
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{base_url}}/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "nonexistent@example.com",
+    "password": "WrongPassword123!"
+  }
+}
+
+tests {
+  test("should return 401 Unauthorized status", function() {
+    expect(res.getStatus()).to.equal(401);
+  });
+
+  test("should have standard API response format", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('success');
+    expect(body).to.have.property('data');
+    expect(body).to.have.property('error');
+    expect(body).to.have.property('timestamp');
+  });
+
+  test("should indicate failure", function() {
+    const body = res.getBody();
+    expect(body.success).to.be.false;
+    expect(body.data).to.be.null;
+  });
+
+  test("should have AUTH_INVALID_CREDENTIALS error code", function() {
+    const body = res.getBody();
+    expect(body.error).to.be.an('object');
+    expect(body.error.code).to.equal('AUTH_INVALID_CREDENTIALS');
+  });
+
+  test("should have error message", function() {
+    const body = res.getBody();
+    expect(body.error.message).to.exist;
+    expect(body.error.message).to.be.a('string');
+  });
+}
