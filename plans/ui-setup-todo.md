@@ -43,25 +43,25 @@
   - Notes: File: `ui/lib/config/env.dart`
 
 ### Phase 3: Core Infrastructure (Goal: API client and base services)
-- [ ] T3.1: Create ApiResponse and ApiError models (Complexity: Medium)
+- [x] T3.1: Create ApiResponse and ApiError models (Complexity: Medium)
   - Description: Create data models matching backend response format with JSON serialization
   - Dependencies: T1.2
   - Acceptance: Models parse backend JSON correctly
   - Notes: File: `ui/lib/models/api_response.dart`
 
-- [ ] T3.2: Create User and AuthToken models (Complexity: Medium)
+- [x] T3.2: Create User and AuthToken models (Complexity: Medium)
   - Description: Create User model with UserRole enum and AuthToken model
   - Dependencies: T3.1
   - Acceptance: JSON serialization/deserialization works
   - Notes: Files: `ui/lib/models/user.dart`, `ui/lib/models/auth_token.dart`
 
-- [ ] T3.3: Implement ApiClient with Dio (Complexity: Medium)
+- [x] T3.3: Implement ApiClient with Dio (Complexity: Medium)
   - Description: Create Dio-based HTTP client with base URL, timeout, error handling
   - Dependencies: T3.1, T2.2
   - Acceptance: Can make HTTP requests to backend
   - Notes: File: `ui/lib/services/api_client.dart`
 
-- [ ] T3.4: Add auth interceptor to ApiClient (Complexity: Medium)
+- [x] T3.4: Add auth interceptor to ApiClient (Complexity: Medium)
   - Description: Add Dio interceptor that attaches JWT token to requests and handles token expiry
   - Dependencies: T3.3
   - Acceptance: Token auto-attached to authenticated requests
@@ -131,10 +131,10 @@
   - Notes: Requires backend running; document any issues found
 
 ## Rollup
-- Open Tasks: 13
-- Completed Tasks: 5
+- Open Tasks: 9
+- Completed Tasks: 9
 - Blockers: none
-- Next Priority: T3.1
+- Next Priority: T4.1
 
 ## Notes
 - Backend auth endpoint not yet implemented; UI work can proceed with planned contract
