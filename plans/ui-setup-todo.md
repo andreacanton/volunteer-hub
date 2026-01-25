@@ -68,19 +68,19 @@
   - Notes: Integrate with storage service once available
 
 ### Phase 4: Authentication (Goal: Login flow with secure storage)
-- [ ] T4.1: Implement secure token storage (Complexity: Simple)
+- [x] T4.1: Implement secure token storage (Complexity: Simple)
   - Description: Create StorageService using flutter_secure_storage for JWT tokens
   - Dependencies: T2.1
   - Acceptance: Can save, read, and delete token from secure storage
   - Notes: File: `ui/lib/services/storage_service.dart`
 
-- [ ] T4.2: Create AuthService (Complexity: Medium)
+- [x] T4.2: Create AuthService (Complexity: Medium)
   - Description: Implement login/logout methods that call API and manage token storage
   - Dependencies: T3.3, T4.1
   - Acceptance: Login stores token, logout clears token
   - Notes: File: `ui/lib/services/auth_service.dart`
 
-- [ ] T4.3: Create AuthProvider with Riverpod (Complexity: Medium)
+- [x] T4.3: Create AuthProvider with Riverpod (Complexity: Medium)
   - Description: Create Riverpod provider for auth state (logged in/out, current user)
   - Dependencies: T4.2
   - Acceptance: Auth state is reactive and updates UI automatically
@@ -131,10 +131,10 @@
   - Notes: Requires backend running; document any issues found
 
 ## Rollup
-- Open Tasks: 9
-- Completed Tasks: 9
+- Open Tasks: 6
+- Completed Tasks: 12
 - Blockers: none
-- Next Priority: T4.1
+- Next Priority: T5.1
 
 ## Notes
 - Backend auth endpoint not yet implemented; UI work can proceed with planned contract
