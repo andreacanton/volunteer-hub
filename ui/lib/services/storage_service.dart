@@ -8,11 +8,7 @@ class StorageService {
   final FlutterSecureStorage _storage;
 
   StorageService({FlutterSecureStorage? storage})
-      : _storage = storage ??
-            const FlutterSecureStorage(
-              aOptions: AndroidOptions(encryptedSharedPreferences: true),
-              iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
-            );
+      : _storage = storage ?? const FlutterSecureStorage();
 
   /// Saves the authentication token.
   Future<void> saveToken(String token) async {
