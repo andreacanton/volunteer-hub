@@ -86,11 +86,23 @@
   - Acceptance: Rotates tokens correctly (old token invalidated, new tokens returned), rejects expired/revoked tokens
   - Notes: Token rotation is critical for security
 
+- [ ] T4.1a: Bruno e2e tests for refresh endpoint (Complexity: Simple)
+  - Description: Create Bruno tests in `webapi/tests/bruno/Auth/`: `refresh-success.bru` (valid token rotation), `refresh-invalid-token.bru` (reject malformed token), `refresh-expired-token.bru` (reject expired), `refresh-revoked-token.bru` (reject already revoked)
+  - Dependencies: T4.1
+  - Acceptance: All tests pass with `bun run test:bruno:auth`, validates token rotation and error cases
+  - Notes: Test that old refresh token is invalidated after successful refresh
+
 - [ ] T4.2: Implement logout endpoint (Complexity: Simple)
   - Description: Add POST /auth/logout to auth module
   - Dependencies: T3.2
   - Acceptance: Revokes refresh token, returns success
   - Notes: Idempotent - success even if token already revoked
+
+- [ ] T4.2a: Bruno e2e tests for logout endpoint (Complexity: Simple)
+  - Description: Create Bruno tests in `webapi/tests/bruno/Auth/`: `logout-success.bru` (revokes token), `logout-idempotent.bru` (success on already revoked token), `logout-invalid-token.bru` (handles invalid token gracefully)
+  - Dependencies: T4.2
+  - Acceptance: All tests pass, validates idempotent behavior
+  - Notes: Verify refresh token cannot be used after logout
 
 ### Phase 5: Password Recovery (Goal: Self-service recovery)
 - [ ] T5.1: Create email service (Complexity: Medium)
@@ -111,11 +123,23 @@
   - Acceptance: Always returns success (prevents email enumeration), sends email if user exists
   - Notes: Constant-time response regardless of user existence
 
+- [ ] T5.3a: Bruno e2e tests for forgot-password endpoint (Complexity: Simple)
+  - Description: Create Bruno tests in `webapi/tests/bruno/Auth/`: `forgot-password-existing.bru` (success for existing email), `forgot-password-nonexistent.bru` (success for non-existent email - no enumeration), `forgot-password-invalid-email.bru` (validation error for malformed email)
+  - Dependencies: T5.3
+  - Acceptance: All tests pass, both existing and non-existing emails return identical success response
+  - Notes: Cannot test actual email sending, just response behavior
+
 - [ ] T5.4: Implement reset-password endpoint (Complexity: Medium)
   - Description: Add POST /auth/reset-password to auth module
   - Dependencies: T5.2
   - Acceptance: Updates password with valid token, rejects expired/used tokens, revokes all sessions
   - Notes: Validate new password strength
+
+- [ ] T5.4a: Bruno e2e tests for reset-password endpoint (Complexity: Medium)
+  - Description: Create Bruno tests in `webapi/tests/bruno/Auth/`: `reset-password-success.bru` (valid token resets password), `reset-password-invalid-token.bru` (reject invalid token), `reset-password-expired-token.bru` (reject expired token), `reset-password-used-token.bru` (reject already used token), `reset-password-weak.bru` (reject weak password)
+  - Dependencies: T5.4
+  - Acceptance: All tests pass, validates token lifecycle and password strength requirements
+  - Notes: Test flow requires creating reset token first (script:pre-request or test dependency)
 
 ### Phase 6: User Module & Integration (Goal: Complete integration)
 - [ ] T6.1: Implement user service (Complexity: Simple)
@@ -129,6 +153,12 @@
   - Dependencies: T6.1
   - Acceptance: Protected routes return/update current user, 401 without valid token
   - Notes: Use existing authGuard middleware
+
+- [ ] T6.2a: Bruno e2e tests for user profile endpoints (Complexity: Medium)
+  - Description: Create Bruno tests in `webapi/tests/bruno/User/`: `get-profile-success.bru` (authenticated user gets profile), `get-profile-unauthorized.bru` (401 without token), `update-profile-success.bru` (update firstName/lastName), `update-profile-unauthorized.bru` (401 without token), `update-profile-validation.bru` (validation errors for invalid data)
+  - Dependencies: T6.2
+  - Acceptance: All tests pass with `bun run test:bruno:user`, validates auth guard and CRUD operations
+  - Notes: Use auth_token variable from login-success.bru for authenticated requests
 
 - [ ] T6.3: Integrate modules into app.ts (Complexity: Simple)
   - Description: Mount auth and user modules in `webapi/src/app.ts`
@@ -243,7 +273,7 @@
   - Notes: Include role field
 
 ## Rollup
-- Open Tasks: 26
+- Open Tasks: 31
 - Completed Tasks: 11
 - Blockers: none
 - Next Priority: T4.1 (refresh endpoint)
@@ -253,3 +283,5 @@
 - T1.1-T1.3 (database) must complete before T3.1-T3.2 (auth service)
 - T7.1-T7.4 (Flutter services) depend on backend API being available
 - Deep linking (T10.1) may require additional platform-specific configuration not covered in this TODO
+- Bruno e2e tests (T4.1a, T4.2a, T5.3a, T5.4a, T6.2a) should be run after each endpoint implementation
+- Add `test:bruno:user` npm script in package.json for User module tests
