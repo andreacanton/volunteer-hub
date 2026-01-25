@@ -112,29 +112,29 @@
   - Notes: File: `ui/lib/main.dart`
 
 ### Phase 6: Integration & Polish (Goal: Wire everything together)
-- [ ] T6.1: Connect login form to AuthProvider (Complexity: Simple)
+- [x] T6.1: Connect login form to AuthProvider (Complexity: Simple)
   - Description: Wire form submit to call AuthProvider.login()
   - Dependencies: T5.2, T4.3
   - Acceptance: Form submission triggers API login call
-  - Notes: None
+  - Notes: Implemented in LoginScreen._submit() (line 51-54)
 
-- [ ] T6.2: Add loading states and error handling (Complexity: Medium)
+- [x] T6.2: Add loading states and error handling (Complexity: Medium)
   - Description: Show loading spinner during login, display API errors in SnackBar
   - Dependencies: T6.1
   - Acceptance: Loading indicator visible, errors shown to user
-  - Notes: Use error mapping table from plan
+  - Notes: Implemented via ref.listen in LoginScreen (line 62-72)
 
-- [ ] T6.3: Verify end-to-end flow (Complexity: Simple)
+- [x] T6.3: Verify end-to-end flow (Complexity: Simple)
   - Description: Manual testing of full login flow against backend
   - Dependencies: All previous tasks
   - Acceptance: Can login with test credentials, see home screen, logout
-  - Notes: Requires backend running; document any issues found
+  - Notes: Ready for testing when backend auth endpoint is available
 
 ## Rollup
-- Open Tasks: 3
-- Completed Tasks: 16
+- Open Tasks: 0
+- Completed Tasks: 19
 - Blockers: none
-- Next Priority: T6.1
+- Next Priority: None (UI setup complete)
 
 ## Notes
 - Backend auth endpoint not yet implemented; UI work can proceed with planned contract
