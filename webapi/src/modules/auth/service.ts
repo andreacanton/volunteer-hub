@@ -254,3 +254,128 @@ export function revokeRefreshTokenByValue(token: string): boolean {
   const result = stmt.run(tokenHash);
   return result.changes > 0;
 }
+
+// ============================================================================
+// Password Reset Functions
+// ============================================================================
+
+/**
+ * Password reset entity as stored in database.
+ */
+export interface PasswordReset {
+  id: string;
+  user_id: string;
+  token_hash: string;
+  expires_at: string;
+  created_at: string;
+  used_at: string | null;
+}
+
+/**
+ * Result of creating a password reset token.
+ */
+export interface CreatePasswordResetResult {
+  token: string; // Plain token to send in email
+  resetId: string; // Database ID for reference
+}
+
+/**
+ * Creates a password reset token for a user.
+ * @param userId - User ID
+ * @returns Plain token and reset ID
+ */
+export function createPasswordReset(userId: string): CreatePasswordResetResult {
+  const db = getDb();
+  const config = getConfig();
+
+  const token = generateToken(32); // 64 character hex string
+  const tokenHash = hashToken(token);
+  const resetId = generateToken(16);
+
+  const expiresInMs = parseDuration(config.PASSWORD_RESET_EXPIRES_IN);
+  const expiresAt = new Date(Date.now() + expiresInMs).toISOString();
+
+  const stmt = db.prepare(`
+    INSERT INTO password_resets (id, user_id, token_hash, expires_at)
+    VALUES (?, ?, ?, ?)
+  `);
+
+  stmt.run(resetId, userId, tokenHash, expiresAt);
+
+  return { token, resetId };
+}
+
+/**
+ * Validates a password reset token.
+ * @param token - Plain reset token
+ * @returns Reset record if valid, null if invalid/expired/used
+ */
+export function validateResetToken(token: string): PasswordReset | null {
+  const db = getDb();
+  const tokenHash = hashToken(token);
+
+  const stmt = db.prepare(`
+    SELECT * FROM password_resets
+    WHERE token_hash = ?
+    AND used_at IS NULL
+  `);
+
+  const resetRecord = stmt.get(tokenHash) as PasswordReset | null;
+
+  if (!resetRecord) {
+    return null;
+  }
+
+  // Check if expired
+  const expiresAt = new Date(resetRecord.expires_at);
+  if (expiresAt < new Date()) {
+    return null;
+  }
+
+  return resetRecord;
+}
+
+/**
+ * Marks a password reset token as used.
+ * @param resetId - Reset record ID
+ */
+export function markResetTokenUsed(resetId: string): void {
+  const db = getDb();
+  const stmt = db.prepare(`
+    UPDATE password_resets
+    SET used_at = datetime('now')
+    WHERE id = ?
+  `);
+
+  stmt.run(resetId);
+}
+
+/**
+ * Resets a user's password.
+ * Also revokes all refresh tokens for security.
+ * @param userId - User ID
+ * @param newPassword - New plain text password
+ */
+export async function updateUserPassword(
+  userId: string,
+  newPassword: string
+): Promise<void> {
+  const db = getDb();
+
+  const passwordHash = await Bun.password.hash(newPassword, {
+    algorithm: "argon2id",
+    memoryCost: 19456, // 19 MiB
+    timeCost: 2,
+  });
+
+  const stmt = db.prepare(`
+    UPDATE users
+    SET password_hash = ?, updated_at = datetime('now')
+    WHERE id = ?
+  `);
+
+  stmt.run(passwordHash, userId);
+
+  // Revoke all refresh tokens for security
+  revokeAllUserTokens(userId);
+}

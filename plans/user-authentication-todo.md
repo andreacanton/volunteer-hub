@@ -105,37 +105,37 @@
   - Notes: Verify refresh token cannot be used after logout
 
 ### Phase 5: Password Recovery (Goal: Self-service recovery)
-- [ ] T5.1: Create email service (Complexity: Medium)
+- [x] T5.1: Create email service (Complexity: Medium)
   - Description: Create `webapi/src/services/email.ts` with `sendPasswordResetEmail()` using nodemailer
   - Dependencies: T2.4
   - Acceptance: Sends email via SMTP with reset link containing token
   - Notes: Use FRONTEND_URL for reset link, graceful failure if SMTP not configured
 
-- [ ] T5.2: Implement password reset service functions (Complexity: Medium)
+- [x] T5.2: Implement password reset service functions (Complexity: Medium)
   - Description: Add to auth service: `createPasswordReset()`, `validateResetToken()`, `resetPassword()`
   - Dependencies: T5.1
   - Acceptance: Can create reset token, validate it, update password and revoke all sessions
   - Notes: 1 hour expiry, single use, revokes all refresh tokens on reset
 
-- [ ] T5.3: Implement forgot-password endpoint (Complexity: Simple)
+- [x] T5.3: Implement forgot-password endpoint (Complexity: Simple)
   - Description: Add POST /auth/forgot-password to auth module
   - Dependencies: T5.2
   - Acceptance: Always returns success (prevents email enumeration), sends email if user exists
   - Notes: Constant-time response regardless of user existence
 
-- [ ] T5.3a: Bruno e2e tests for forgot-password endpoint (Complexity: Simple)
+- [x] T5.3a: Bruno e2e tests for forgot-password endpoint (Complexity: Simple)
   - Description: Create Bruno tests in `webapi/tests/bruno/Auth/`: `forgot-password-existing.bru` (success for existing email), `forgot-password-nonexistent.bru` (success for non-existent email - no enumeration), `forgot-password-invalid-email.bru` (validation error for malformed email)
   - Dependencies: T5.3
   - Acceptance: All tests pass, both existing and non-existing emails return identical success response
   - Notes: Cannot test actual email sending, just response behavior
 
-- [ ] T5.4: Implement reset-password endpoint (Complexity: Medium)
+- [x] T5.4: Implement reset-password endpoint (Complexity: Medium)
   - Description: Add POST /auth/reset-password to auth module
   - Dependencies: T5.2
   - Acceptance: Updates password with valid token, rejects expired/used tokens, revokes all sessions
   - Notes: Validate new password strength
 
-- [ ] T5.4a: Bruno e2e tests for reset-password endpoint (Complexity: Medium)
+- [x] T5.4a: Bruno e2e tests for reset-password endpoint (Complexity: Medium)
   - Description: Create Bruno tests in `webapi/tests/bruno/Auth/`: `reset-password-success.bru` (valid token resets password), `reset-password-invalid-token.bru` (reject invalid token), `reset-password-expired-token.bru` (reject expired token), `reset-password-used-token.bru` (reject already used token), `reset-password-weak.bru` (reject weak password)
   - Dependencies: T5.4
   - Acceptance: All tests pass, validates token lifecycle and password strength requirements
@@ -273,10 +273,10 @@
   - Notes: Include role field
 
 ## Rollup
-- Open Tasks: 27
-- Completed Tasks: 15
+- Open Tasks: 21
+- Completed Tasks: 21
 - Blockers: none
-- Next Priority: T5.1 (email service)
+- Next Priority: T6.1 (user service)
 
 ## Notes
 - Backend (T1.1-T6.4) can be developed independently from frontend (T7.1-T10.4)

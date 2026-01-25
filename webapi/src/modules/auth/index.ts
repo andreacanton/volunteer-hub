@@ -10,9 +10,14 @@ import {
   validateRefreshToken,
   revokeRefreshToken,
   revokeRefreshTokenByValue,
+  createPasswordReset,
+  validateResetToken,
+  markResetTokenUsed,
+  updateUserPassword,
 } from "./service.ts";
 import { UserRole } from "../../constants/userRole.ts";
 import type { JwtPayload } from "../../middleware/jwt.ts";
+import { sendPasswordResetEmail } from "../../services/email.ts";
 
 // Request schemas
 const RegisterRequestSchema = t.Object({
@@ -46,6 +51,22 @@ const LogoutRequestSchema = t.Object({
   }),
 });
 
+const ForgotPasswordRequestSchema = t.Object({
+  email: t.String({
+    format: "email",
+  }),
+});
+
+const ResetPasswordRequestSchema = t.Object({
+  token: t.String({
+    minLength: 1,
+  }),
+  password: t.String({
+    minLength: 8,
+    maxLength: 100,
+  }),
+});
+
 // Response schemas
 const UserResponseSchema = t.Object({
   id: t.String(),
@@ -66,6 +87,14 @@ const LoginResponseSchema = t.Object({
 });
 
 const LogoutResponseSchema = t.Object({
+  message: t.String(),
+});
+
+const ForgotPasswordResponseSchema = t.Object({
+  message: t.String(),
+});
+
+const ResetPasswordResponseSchema = t.Object({
   message: t.String(),
 });
 
@@ -244,6 +273,94 @@ export const authModule = new Elysia({ prefix: "/auth" })
       },
       response: {
         200: apiResponseSchema(LogoutResponseSchema),
+      },
+    }
+  )
+  .post(
+    "/forgot-password",
+    async ({ body }) => {
+      const { email } = body;
+
+      // Always return success to prevent email enumeration
+      const responseMessage =
+        "If an account with that email exists, a password reset link has been sent.";
+
+      // Check if user exists
+      const user = getUserByEmail(email);
+      if (!user) {
+        // Return success anyway to prevent email enumeration
+        return success({
+          message: responseMessage,
+        });
+      }
+
+      // Create password reset token
+      const { token } = createPasswordReset(user.id);
+
+      // Send email (fire and forget - don't fail the request if email fails)
+      sendPasswordResetEmail(email, token);
+
+      return success({
+        message: responseMessage,
+      });
+    },
+    {
+      body: ForgotPasswordRequestSchema,
+      detail: {
+        summary: "Request password reset",
+        description:
+          "Sends a password reset email if the account exists. Always returns success to prevent email enumeration.",
+        tags: ["Auth"],
+      },
+      response: {
+        200: apiResponseSchema(ForgotPasswordResponseSchema),
+      },
+    }
+  )
+  .post(
+    "/reset-password",
+    async ({ body }) => {
+      const { token, password } = body;
+
+      // Validate the reset token
+      const resetRecord = validateResetToken(token);
+      if (!resetRecord) {
+        throw new ApiError(
+          ErrorCode.AUTH_TOKEN_INVALID,
+          "Invalid or expired password reset token"
+        );
+      }
+
+      // Validate password strength
+      if (password.length < 8) {
+        throw new ApiError(
+          ErrorCode.VALIDATION_ERROR,
+          "Password must be at least 8 characters long"
+        );
+      }
+
+      // Update password (also revokes all refresh tokens)
+      await updateUserPassword(resetRecord.user_id, password);
+
+      // Mark reset token as used
+      markResetTokenUsed(resetRecord.id);
+
+      return success({
+        message: "Password has been reset successfully. Please log in with your new password.",
+      });
+    },
+    {
+      body: ResetPasswordRequestSchema,
+      detail: {
+        summary: "Reset password",
+        description:
+          "Resets the user's password using a valid reset token. Revokes all existing sessions.",
+        tags: ["Auth"],
+      },
+      response: {
+        200: apiResponseSchema(ResetPasswordResponseSchema),
+        400: t.Any(),
+        401: t.Any(),
       },
     }
   );
