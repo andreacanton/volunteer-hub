@@ -235,3 +235,22 @@ export function revokeAllUserTokens(userId: string): void {
 
   stmt.run(userId);
 }
+
+/**
+ * Revokes a refresh token by its plain token value.
+ * @param token - Plain refresh token
+ * @returns true if token was revoked, false if not found
+ */
+export function revokeRefreshTokenByValue(token: string): boolean {
+  const db = getDb();
+  const tokenHash = hashToken(token);
+
+  const stmt = db.prepare(`
+    UPDATE refresh_tokens
+    SET revoked_at = datetime('now')
+    WHERE token_hash = ? AND revoked_at IS NULL
+  `);
+
+  const result = stmt.run(tokenHash);
+  return result.changes > 0;
+}

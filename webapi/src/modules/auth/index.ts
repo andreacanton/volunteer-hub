@@ -1,7 +1,16 @@
 import { Elysia, t } from "elysia";
-import { success, error, ErrorCode, apiResponseSchema } from "../../utils/response.ts";
+import { success, ErrorCode, apiResponseSchema } from "../../utils/response.ts";
 import { ApiError } from "../../middleware/errorHandler.ts";
-import { createUser, getUserByEmail, validateCredentials, createRefreshToken } from "./service.ts";
+import {
+  createUser,
+  getUserByEmail,
+  getUserById,
+  validateCredentials,
+  createRefreshToken,
+  validateRefreshToken,
+  revokeRefreshToken,
+  revokeRefreshTokenByValue,
+} from "./service.ts";
 import { UserRole } from "../../constants/userRole.ts";
 import type { JwtPayload } from "../../middleware/jwt.ts";
 
@@ -25,6 +34,18 @@ const LoginRequestSchema = t.Object({
   password: t.String(),
 });
 
+const RefreshRequestSchema = t.Object({
+  refreshToken: t.String({
+    minLength: 1,
+  }),
+});
+
+const LogoutRequestSchema = t.Object({
+  refreshToken: t.String({
+    minLength: 1,
+  }),
+});
+
 // Response schemas
 const UserResponseSchema = t.Object({
   id: t.String(),
@@ -42,6 +63,10 @@ const LoginResponseSchema = t.Object({
   accessToken: t.String(),
   refreshToken: t.String(),
   user: UserResponseSchema,
+});
+
+const LogoutResponseSchema = t.Object({
+  message: t.String(),
 });
 
 export const authModule = new Elysia({ prefix: "/auth" })
@@ -133,6 +158,92 @@ export const authModule = new Elysia({ prefix: "/auth" })
       response: {
         200: apiResponseSchema(LoginResponseSchema),
         401: t.Any(),
+      },
+    }
+  )
+  .post(
+    "/refresh",
+    async ({ body, jwt }) => {
+      const { refreshToken } = body;
+
+      // Validate the refresh token
+      const tokenRecord = validateRefreshToken(refreshToken);
+      if (!tokenRecord) {
+        throw new ApiError(
+          ErrorCode.AUTH_TOKEN_INVALID,
+          "Invalid or expired refresh token"
+        );
+      }
+
+      // Get the user
+      const user = getUserById(tokenRecord.user_id);
+      if (!user) {
+        // User was deleted, revoke the token
+        revokeRefreshToken(tokenRecord.id);
+        throw new ApiError(
+          ErrorCode.AUTH_USER_NOT_FOUND,
+          "User not found"
+        );
+      }
+
+      // Revoke the old refresh token (token rotation)
+      revokeRefreshToken(tokenRecord.id);
+
+      // Create new access token
+      const payload: JwtPayload = {
+        sub: user.id,
+        email: user.email,
+        role: user.role,
+      };
+      const accessToken = await jwt.sign(payload);
+
+      // Create new refresh token
+      const { token: newRefreshToken } = createRefreshToken(user.id);
+
+      // Return user without password_hash
+      const { password_hash, ...userWithoutPassword } = user;
+
+      return success({
+        accessToken,
+        refreshToken: newRefreshToken,
+        user: userWithoutPassword,
+      });
+    },
+    {
+      body: RefreshRequestSchema,
+      detail: {
+        summary: "Refresh tokens",
+        description: "Exchanges a valid refresh token for new access and refresh tokens",
+        tags: ["Auth"],
+      },
+      response: {
+        200: apiResponseSchema(LoginResponseSchema),
+        401: t.Any(),
+        404: t.Any(),
+      },
+    }
+  )
+  .post(
+    "/logout",
+    async ({ body }) => {
+      const { refreshToken } = body;
+
+      // Revoke the token - idempotent, returns success regardless
+      revokeRefreshTokenByValue(refreshToken);
+
+      return success({
+        message: "Logged out successfully",
+      });
+    },
+    {
+      body: LogoutRequestSchema,
+      detail: {
+        summary: "Logout",
+        description: "Revokes the refresh token, ending the session",
+        tags: ["Auth"],
+      },
+      response: {
+        200: apiResponseSchema(LogoutResponseSchema),
       },
     }
   );

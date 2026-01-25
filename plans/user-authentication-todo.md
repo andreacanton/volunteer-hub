@@ -80,25 +80,25 @@
   - Notes: Access token 15min expiry, refresh token 7 days
 
 ### Phase 4: Auth Module - Token Refresh & Logout (Goal: Session management)
-- [ ] T4.1: Implement refresh endpoint (Complexity: Medium)
+- [x] T4.1: Implement refresh endpoint (Complexity: Medium)
   - Description: Add POST /auth/refresh to auth module
   - Dependencies: T3.2
   - Acceptance: Rotates tokens correctly (old token invalidated, new tokens returned), rejects expired/revoked tokens
   - Notes: Token rotation is critical for security
 
-- [ ] T4.1a: Bruno e2e tests for refresh endpoint (Complexity: Simple)
+- [x] T4.1a: Bruno e2e tests for refresh endpoint (Complexity: Simple)
   - Description: Create Bruno tests in `webapi/tests/bruno/Auth/`: `refresh-success.bru` (valid token rotation), `refresh-invalid-token.bru` (reject malformed token), `refresh-expired-token.bru` (reject expired), `refresh-revoked-token.bru` (reject already revoked)
   - Dependencies: T4.1
   - Acceptance: All tests pass with `bun run test:bruno:auth`, validates token rotation and error cases
   - Notes: Test that old refresh token is invalidated after successful refresh
 
-- [ ] T4.2: Implement logout endpoint (Complexity: Simple)
+- [x] T4.2: Implement logout endpoint (Complexity: Simple)
   - Description: Add POST /auth/logout to auth module
   - Dependencies: T3.2
   - Acceptance: Revokes refresh token, returns success
   - Notes: Idempotent - success even if token already revoked
 
-- [ ] T4.2a: Bruno e2e tests for logout endpoint (Complexity: Simple)
+- [x] T4.2a: Bruno e2e tests for logout endpoint (Complexity: Simple)
   - Description: Create Bruno tests in `webapi/tests/bruno/Auth/`: `logout-success.bru` (revokes token), `logout-idempotent.bru` (success on already revoked token), `logout-invalid-token.bru` (handles invalid token gracefully)
   - Dependencies: T4.2
   - Acceptance: All tests pass, validates idempotent behavior
@@ -273,10 +273,10 @@
   - Notes: Include role field
 
 ## Rollup
-- Open Tasks: 31
-- Completed Tasks: 11
+- Open Tasks: 27
+- Completed Tasks: 15
 - Blockers: none
-- Next Priority: T4.1 (refresh endpoint)
+- Next Priority: T5.1 (email service)
 
 ## Notes
 - Backend (T1.1-T6.4) can be developed independently from frontend (T7.1-T10.4)

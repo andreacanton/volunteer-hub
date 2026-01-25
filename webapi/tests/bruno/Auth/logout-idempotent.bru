@@ -1,0 +1,53 @@
+meta {
+  name: Logout Idempotent
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{base_url}}/auth/logout
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refreshToken": "{{new_refresh_token}}"
+  }
+}
+
+tests {
+  test("should return 200 status even for already revoked token", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("should have standard API response format", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('success');
+    expect(body).to.have.property('data');
+    expect(body).to.have.property('error');
+    expect(body).to.have.property('timestamp');
+  });
+
+  test("should indicate success (idempotent)", function() {
+    const body = res.getBody();
+    expect(body.success).to.be.true;
+    expect(body.error).to.be.null;
+  });
+
+  test("should return success message", function() {
+    const body = res.getBody();
+    expect(body.data).to.have.property('message');
+    expect(body.data.message).to.include('Logged out');
+  });
+}
+
+docs {
+  # Logout Idempotent Test
+
+  This test verifies that logout is idempotent - calling logout with an
+  already revoked token still returns success.
+
+  **Prerequisites:**
+  - Run logout-success.bru first to revoke the token
+}
