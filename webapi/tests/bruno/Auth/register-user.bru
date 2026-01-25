@@ -27,7 +27,7 @@ tests {
   test("should return 200 status", function() {
     expect(res.getStatus()).to.equal(200);
   });
-
+  
   test("should have standard API response format", function() {
     const body = res.getBody();
     expect(body).to.have.property('success');
@@ -35,17 +35,17 @@ tests {
     expect(body).to.have.property('error');
     expect(body).to.have.property('timestamp');
   });
-
+  
   test("should indicate success", function() {
     const body = res.getBody();
     expect(body.success).to.be.true;
     expect(body.error).to.be.null;
   });
-
+  
   test("should have success message", function() {
     const body = res.getBody();
     expect(body.data).to.be.an('object');
     expect(body.data).to.have.property('message');
-    expect(body.data.message).to.include('registered');
+    expect(body.data.message).to.include('Registration successful. Please log in.');
   });
 }
