@@ -44,26 +44,41 @@ final apiClientProvider = Provider<ApiClient>((ref) {
 });
 
 /// Provider for the storage service singleton.
-final storageServiceProvider = Provider<StorageService>((ref) {
-  return StorageService();
+/// Uses FutureProvider since SharedPreferences initialization is async.
+final storageServiceProvider = FutureProvider<StorageService>((ref) async {
+  return StorageService.create();
 });
 
 /// Provider for the auth service.
-final authServiceProvider = Provider<AuthService>((ref) {
+/// Waits for storage service initialization before creating auth service.
+final authServiceProvider = FutureProvider<AuthService>((ref) async {
+  final storageService = await ref.watch(storageServiceProvider.future);
   return AuthService(
     apiClient: ref.watch(apiClientProvider),
-    storageService: ref.watch(storageServiceProvider),
+    storageService: storageService,
   );
 });
 
 /// Notifier managing authentication state.
 class AuthNotifier extends StateNotifier<AuthState> {
-  final AuthService _authService;
+  final AuthService? _authService;
 
   AuthNotifier(this._authService) : super(const AuthInitial());
 
+  /// Creates a notifier in loading state (used during initialization).
+  AuthNotifier._loading()
+      : _authService = null,
+        super(const AuthLoading());
+
+  /// Creates a notifier in error state (used when initialization fails).
+  AuthNotifier._error(String message)
+      : _authService = null,
+        super(AuthError(message));
+
   /// Initializes auth state by checking for stored session.
   Future<void> initialize() async {
+    if (_authService == null) return;
+
     state = const AuthLoading();
     try {
       final user = await _authService.restoreSession();
@@ -79,6 +94,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   /// Attempts to login with credentials.
   Future<void> login(String email, String password) async {
+    if (_authService == null) {
+      state = const AuthError('Authentication service not initialized');
+      return;
+    }
+
     state = const AuthLoading();
     try {
       final user = await _authService.login(email, password);
@@ -92,6 +112,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   /// Logs out the current user.
   Future<void> logout() async {
+    if (_authService == null) return;
+
     await _authService.logout();
     state = const AuthUnauthenticated();
   }
@@ -105,8 +127,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
 }
 
 /// Provider for the auth state notifier.
+/// Returns AuthLoading while waiting for auth service initialization.
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier(ref.watch(authServiceProvider));
+  final authServiceAsync = ref.watch(authServiceProvider);
+
+  return authServiceAsync.when(
+    data: (authService) => AuthNotifier(authService),
+    loading: () => AuthNotifier._loading(),
+    error: (error, stack) => AuthNotifier._error(error.toString()),
+  );
 });
 
 /// Convenience provider to get the current user if authenticated.
