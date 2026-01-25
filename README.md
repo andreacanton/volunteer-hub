@@ -38,7 +38,7 @@ The application supports four types of services:
 
 ## Technology Stack
 
-- **Frontend**: Flutter (Dart) - Cross-platform mobile app (iOS & Android)
+- **Frontend**: Flutter (Dart) - web only app
 - **Backend Runtime**: Bun.js
 - **Backend Framework**: Elysia (TypeScript)
 - **Database**: SQLite
@@ -82,12 +82,6 @@ cd ronda-carita-attendance/frontend
 # Get Flutter dependencies
 flutter pub get
 
-# Run on iOS simulator (macOS only)
-flutter run -d ios
-
-# Run on Android emulator
-flutter run -d android
-
 # Or run on connected device
 flutter run
 ```
@@ -128,7 +122,7 @@ flutter run
 │   ├── database/          # SQLite database files
 │   └── package.json
 │
-├── frontend/              # Flutter mobile app
+├── frontend/              # Flutter web app
 │   ├── lib/
 │   │   ├── main.dart
 │   │   ├── models/        # Data models (User, Service, Attendance)

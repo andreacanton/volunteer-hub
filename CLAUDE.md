@@ -7,7 +7,7 @@ Volunteer Attendance Management - a full-stack application for coordinating char
 ## Technology Stack
 
 - **Backend**: Bun.js + Elysia (TypeScript), SQLite with bun:sqlite
-- **Frontend**: Flutter (Dart) for iOS/Android
+- **Frontend**: Flutter (Dart) - Web only
 - **Auth**: JWT tokens (HS256, 24h expiration)
 - **API**: RESTful with `/api/v1/` prefix
 - **Logging**: LogTape (@logtape/logtape)
@@ -33,7 +33,7 @@ webapi/            # Bun.js + Elysia API
   database/        # SQLite database files (.gitignored)
   tests/
 
-ui/                # Flutter mobile app
+ui/                # Flutter web app
   lib/
     models/        # Data models
     services/      # API client (dio)
@@ -116,9 +116,7 @@ bun run lint         # Run ESLint
 ```bash
 cd ui
 flutter pub get      # Get dependencies
-flutter run          # Run on connected device
-flutter run -d ios   # Run on iOS simulator
-flutter run -d android  # Run on Android emulator
+flutter run -d chrome  # Run in Chrome browser
 flutter test         # Run tests
 ```
 
