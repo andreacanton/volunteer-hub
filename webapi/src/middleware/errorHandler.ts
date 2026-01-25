@@ -23,6 +23,7 @@ export class ApiError extends Error {
  * into the standard API response format.
  */
 export const errorHandler = new Elysia({ name: "errorHandler" }).onError(
+  { as: "global" },
   ({ code, error: err, set }) => {
     // Handle Elysia validation errors
     if (code === "VALIDATION") {
