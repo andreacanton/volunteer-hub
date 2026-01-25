@@ -87,25 +87,25 @@
   - Notes: File: `ui/lib/providers/auth_provider.dart`
 
 ### Phase 5: UI Implementation (Goal: Login screen and app shell)
-- [ ] T5.1: Create app theme configuration (Complexity: Simple)
+- [x] T5.1: Create app theme configuration (Complexity: Simple)
   - Description: Define Material 3 theme with color scheme
   - Dependencies: T1.2
   - Acceptance: Theme applied consistently across app
   - Notes: File: `ui/lib/config/theme.dart`
 
-- [ ] T5.2: Create LoginScreen with form (Complexity: Medium)
+- [x] T5.2: Create LoginScreen with form (Complexity: Medium)
   - Description: Build login screen with email/password fields, validation, submit button
   - Dependencies: T4.3, T5.1
   - Acceptance: Form validates input, shows validation errors
   - Notes: File: `ui/lib/screens/login_screen.dart`
 
-- [ ] T5.3: Create HomeScreen placeholder (Complexity: Simple)
+- [x] T5.3: Create HomeScreen placeholder (Complexity: Simple)
   - Description: Create basic home screen showing logged-in user info
   - Dependencies: T5.1
   - Acceptance: Displays user name and role after login
   - Notes: File: `ui/lib/screens/home_screen.dart`
 
-- [ ] T5.4: Setup app routing and shell (Complexity: Medium)
+- [x] T5.4: Setup app routing and shell (Complexity: Medium)
   - Description: Configure main.dart with ProviderScope, routing between login/home based on auth
   - Dependencies: T5.2, T5.3
   - Acceptance: Redirects to login when unauthenticated, home when authenticated
@@ -131,10 +131,10 @@
   - Notes: Requires backend running; document any issues found
 
 ## Rollup
-- Open Tasks: 6
-- Completed Tasks: 12
+- Open Tasks: 3
+- Completed Tasks: 16
 - Blockers: none
-- Next Priority: T5.1
+- Next Priority: T6.1
 
 ## Notes
 - Backend auth endpoint not yet implemented; UI work can proceed with planned contract
