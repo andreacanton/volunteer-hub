@@ -73,7 +73,7 @@
   - Acceptance: Returns success on valid registration, proper validation errors (email format, password strength, duplicate email)
   - Notes: TypeBox schemas for validation, no auto-login after registration
 
-- [ ] T3.4: Implement login endpoint (Complexity: Medium)
+- [x] T3.4: Implement login endpoint (Complexity: Medium)
   - Description: Add POST /auth/login to auth module
   - Dependencies: T3.2
   - Acceptance: Returns accessToken, refreshToken, user object on valid credentials; 401 on invalid
@@ -243,10 +243,10 @@
   - Notes: Include role field
 
 ## Rollup
-- Open Tasks: 27
-- Completed Tasks: 10
+- Open Tasks: 26
+- Completed Tasks: 11
 - Blockers: none
-- Next Priority: T3.4 (login endpoint)
+- Next Priority: T4.1 (refresh endpoint)
 
 ## Notes
 - Backend (T1.1-T6.4) can be developed independently from frontend (T7.1-T10.4)
