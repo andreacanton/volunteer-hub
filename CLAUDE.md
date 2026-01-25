@@ -109,8 +109,11 @@ bun run migrate      # Run database migrations
 bun run build        # Build for production
 bun run start        # Start production server
 bun test             # Run tests
+bun run test:bruno:auth  # Run Bruno API tests for auth
 bun run lint         # Run ESLint
 ```
+
+**Note**: `bun run dev` uses hot reload - no need to restart the server after code changes. Just edit and test directly.
 
 ### Frontend (ui/)
 ```bash
