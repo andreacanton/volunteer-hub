@@ -1,0 +1,43 @@
+meta {
+  name: Get Profile Unauthorized
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/users/me
+  body: none
+  auth: none
+}
+
+tests {
+  test("should return 401 Unauthorized status", function() {
+    expect(res.getStatus()).to.equal(401);
+  });
+
+  test("should have standard API response format", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('success');
+    expect(body).to.have.property('data');
+    expect(body).to.have.property('error');
+    expect(body).to.have.property('timestamp');
+  });
+
+  test("should indicate failure", function() {
+    const body = res.getBody();
+    expect(body.success).to.be.false;
+    expect(body.data).to.be.null;
+  });
+
+  test("should have auth error code", function() {
+    const body = res.getBody();
+    expect(body.error).to.have.property('code');
+    expect(body.error.code).to.be.oneOf(['AUTH_TOKEN_MISSING', 'AUTH_TOKEN_INVALID']);
+  });
+}
+
+docs {
+  # Get Profile Unauthorized Test
+
+  This test verifies that unauthenticated requests are rejected with 401.
+}

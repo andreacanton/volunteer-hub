@@ -15,6 +15,7 @@
     "test:bruno:ci": "cd tests/bruno && bru run --env local --reporter-junit ../../results/bruno-junit.xml",
     "test:bruno:health": "cd tests/bruno && bru run Health --env local",
     "test:bruno:auth": "cd tests/bruno && bru run Auth --env local",
+    "test:bruno:user": "cd tests/bruno && bru run User --env local",
     "test:all": "bun test && bun run test:bruno",
     "seed:test": "bun run tests/bruno/seed-test-users.ts",
     "lint": "eslint src/ tests/",

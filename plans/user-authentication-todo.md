@@ -142,31 +142,31 @@
   - Notes: Test flow requires creating reset token first (script:pre-request or test dependency)
 
 ### Phase 6: User Module & Integration (Goal: Complete integration)
-- [ ] T6.1: Implement user service (Complexity: Simple)
+- [x] T6.1: Implement user service (Complexity: Simple)
   - Description: Create `webapi/src/modules/user/service.ts` with `getUserById()`, `updateUser()` functions
   - Dependencies: T1.1
   - Acceptance: Can fetch and update user profile
   - Notes: Pure functions, password update re-hashes
 
-- [ ] T6.2: Implement user profile endpoints (Complexity: Medium)
+- [x] T6.2: Implement user profile endpoints (Complexity: Medium)
   - Description: Create `webapi/src/modules/user/index.ts` with GET /users/me and PUT /users/me
   - Dependencies: T6.1
   - Acceptance: Protected routes return/update current user, 401 without valid token
   - Notes: Use existing authGuard middleware
 
-- [ ] T6.2a: Bruno e2e tests for user profile endpoints (Complexity: Medium)
+- [x] T6.2a: Bruno e2e tests for user profile endpoints (Complexity: Medium)
   - Description: Create Bruno tests in `webapi/tests/bruno/User/`: `get-profile-success.bru` (authenticated user gets profile), `get-profile-unauthorized.bru` (401 without token), `update-profile-success.bru` (update firstName/lastName), `update-profile-unauthorized.bru` (401 without token), `update-profile-validation.bru` (validation errors for invalid data)
   - Dependencies: T6.2
   - Acceptance: All tests pass with `bun run test:bruno:user`, validates auth guard and CRUD operations
   - Notes: Use auth_token variable from login-success.bru for authenticated requests
 
-- [ ] T6.3: Integrate modules into app.ts (Complexity: Simple)
+- [x] T6.3: Integrate modules into app.ts (Complexity: Simple)
   - Description: Mount auth and user modules in `webapi/src/app.ts`
   - Dependencies: T4.2, T5.4, T6.2
   - Acceptance: All auth and user endpoints accessible, health check passes
   - Notes: Mount under /api/v1/auth and /api/v1/users
 
-- [ ] T6.4: Update .env.example with new variables (Complexity: Simple)
+- [x] T6.4: Update .env.example with new variables (Complexity: Simple)
   - Description: Document all new env vars in `webapi/.env.example`
   - Dependencies: T2.4
   - Acceptance: All new variables documented with descriptions
@@ -273,10 +273,10 @@
   - Notes: Include role field
 
 ## Rollup
-- Open Tasks: 21
-- Completed Tasks: 21
+- Open Tasks: 16
+- Completed Tasks: 26
 - Blockers: none
-- Next Priority: T6.1 (user service)
+- Next Priority: T7.1 (Flutter AuthToken model)
 
 ## Notes
 - Backend (T1.1-T6.4) can be developed independently from frontend (T7.1-T10.4)
