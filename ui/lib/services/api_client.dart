@@ -1,12 +1,28 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 
 import '../config/env.dart';
 import '../models/api_response.dart';
+import '../models/auth_token.dart';
+
+/// Callback type for when tokens are refreshed.
+typedef TokensRefreshedCallback = void Function(AuthToken authToken);
+
+/// Callback type for when token refresh fails.
+typedef RefreshFailedCallback = void Function();
 
 /// HTTP client for API communication.
 class ApiClient {
   late final Dio _dio;
   String? _authToken;
+  String? _refreshToken;
+
+  /// Called when tokens are successfully refreshed.
+  TokensRefreshedCallback? onTokensRefreshed;
+
+  /// Called when token refresh fails (e.g., refresh token expired).
+  RefreshFailedCallback? onRefreshFailed;
 
   ApiClient() {
     _dio = Dio(
@@ -22,6 +38,7 @@ class ApiClient {
     );
 
     _dio.interceptors.add(_AuthInterceptor(this));
+    _dio.interceptors.add(_TokenRefreshInterceptor(this));
     _dio.interceptors.add(_ErrorInterceptor());
   }
 
@@ -32,6 +49,20 @@ class ApiClient {
 
   /// Returns the current auth token.
   String? get authToken => _authToken;
+
+  /// Sets the refresh token for token refresh operations.
+  void setRefreshToken(String? token) {
+    _refreshToken = token;
+  }
+
+  /// Returns the current refresh token.
+  String? get refreshToken => _refreshToken;
+
+  /// Clears both tokens (for logout).
+  void clearTokens() {
+    _authToken = null;
+    _refreshToken = null;
+  }
 
   /// Performs a GET request.
   Future<ApiResponse<T>> get<T>(
@@ -115,6 +146,128 @@ class _AuthInterceptor extends Interceptor {
       options.headers['Authorization'] = 'Bearer $token';
     }
     handler.next(options);
+  }
+}
+
+/// Interceptor that handles automatic token refresh on 401 errors.
+class _TokenRefreshInterceptor extends Interceptor {
+  final ApiClient _client;
+
+  /// Lock to prevent multiple concurrent refresh attempts.
+  bool _isRefreshing = false;
+
+  /// Completer for pending requests waiting for refresh to complete.
+  Completer<void>? _refreshCompleter;
+
+  _TokenRefreshInterceptor(this._client);
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    // Only handle 401 errors for non-auth endpoints
+    if (err.response?.statusCode != 401) {
+      return handler.next(err);
+    }
+
+    // Skip refresh for auth endpoints (login, refresh, etc.)
+    final path = err.requestOptions.path;
+    if (path.contains('auth/login') ||
+        path.contains('auth/refresh') ||
+        path.contains('auth/register')) {
+      return handler.next(err);
+    }
+
+    // No refresh token available, can't refresh
+    final refreshToken = _client.refreshToken;
+    if (refreshToken == null) {
+      return handler.next(err);
+    }
+
+    try {
+      // Wait for any ongoing refresh to complete
+      if (_isRefreshing) {
+        await _refreshCompleter?.future;
+        // Retry with new token
+        final response = await _retryRequest(err.requestOptions);
+        return handler.resolve(response);
+      }
+
+      // Start refresh
+      _isRefreshing = true;
+      _refreshCompleter = Completer<void>();
+
+      final success = await _attemptTokenRefresh(refreshToken);
+
+      if (success) {
+        _refreshCompleter?.complete();
+        _isRefreshing = false;
+        _refreshCompleter = null;
+
+        // Retry the original request with new token
+        final response = await _retryRequest(err.requestOptions);
+        return handler.resolve(response);
+      } else {
+        _refreshCompleter?.completeError('Refresh failed');
+        _isRefreshing = false;
+        _refreshCompleter = null;
+
+        // Notify about refresh failure (triggers logout)
+        _client.onRefreshFailed?.call();
+        return handler.next(err);
+      }
+    } catch (e) {
+      _isRefreshing = false;
+      _refreshCompleter?.completeError(e);
+      _refreshCompleter = null;
+      return handler.next(err);
+    }
+  }
+
+  /// Attempts to refresh the access token.
+  Future<bool> _attemptTokenRefresh(String refreshToken) async {
+    try {
+      // Create a separate Dio instance to avoid interceptor loops
+      final refreshDio = Dio(
+        BaseOptions(
+          baseUrl: Env.apiBaseUrl,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        ),
+      );
+
+      final response = await refreshDio.post<Map<String, dynamic>>(
+        'auth/refresh',
+        data: {'refreshToken': refreshToken},
+      );
+
+      if (response.data?['success'] == true && response.data?['data'] != null) {
+        final authToken = AuthToken.fromJson(
+          response.data!['data'] as Map<String, dynamic>,
+        );
+
+        // Update tokens in the client
+        _client.setAuthToken(authToken.accessToken);
+        _client.setRefreshToken(authToken.refreshToken);
+
+        // Notify listeners about the new tokens
+        _client.onTokensRefreshed?.call(authToken);
+
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Retries a request with the updated auth token.
+  Future<Response<dynamic>> _retryRequest(RequestOptions options) async {
+    // Update the authorization header with the new token
+    options.headers['Authorization'] = 'Bearer ${_client.authToken}';
+
+    return _client._dio.fetch(options);
   }
 }
 

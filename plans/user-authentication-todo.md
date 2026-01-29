@@ -173,25 +173,25 @@
   - Notes: Include sensible defaults where applicable
 
 ### Phase 7: Flutter - Auth Service & Storage (Goal: API integration layer)
-- [ ] T7.1: Update AuthToken model for refresh tokens (Complexity: Simple)
+- [x] T7.1: Update AuthToken model for refresh tokens (Complexity: Simple)
   - Description: Update `ui/lib/models/auth_token.dart` with accessToken, refreshToken, expiresAt fields and JSON serialization
   - Dependencies: T3.4
   - Acceptance: Model correctly parses login response, handles both tokens
   - Notes: expiresAt for access token only
 
-- [ ] T7.2: Extend StorageService for refresh token storage (Complexity: Simple)
+- [x] T7.2: Extend StorageService for refresh token storage (Complexity: Simple)
   - Description: Update `ui/lib/services/storage_service.dart` with `saveRefreshToken()`, `getRefreshToken()`, `clearRefreshToken()`
   - Dependencies: T7.1
   - Acceptance: Refresh token persisted securely using FlutterSecureStorage
   - Notes: Separate from access token storage
 
-- [ ] T7.3: Implement token refresh interceptor in ApiClient (Complexity: Complex)
+- [x] T7.3: Implement token refresh interceptor in ApiClient (Complexity: Complex)
   - Description: Update `ui/lib/services/api_client.dart` with Dio interceptor for automatic token refresh
   - Dependencies: T7.2
   - Acceptance: Interceptor detects 401, refreshes token, retries request; handles refresh failure (logout)
   - Notes: Queue concurrent requests during refresh, use lock to prevent multiple refreshes
 
-- [ ] T7.4: Extend AuthService with new endpoints (Complexity: Medium)
+- [x] T7.4: Extend AuthService with new endpoints (Complexity: Medium)
   - Description: Update `ui/lib/services/auth_service.dart` with `register()`, `refreshToken()`, `requestPasswordReset()`, `resetPassword()` methods
   - Dependencies: T7.3
   - Acceptance: All new auth endpoints callable, proper error handling
@@ -273,10 +273,10 @@
   - Notes: Include role field
 
 ## Rollup
-- Open Tasks: 16
-- Completed Tasks: 26
+- Open Tasks: 12
+- Completed Tasks: 30
 - Blockers: none
-- Next Priority: T7.1 (Flutter AuthToken model)
+- Next Priority: T8.1 (Flutter AuthState for new flows)
 
 ## Notes
 - Backend (T1.1-T6.4) can be developed independently from frontend (T7.1-T10.4)
