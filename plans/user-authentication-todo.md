@@ -217,31 +217,31 @@
   - Notes: Use Timer, cancel on logout
 
 ### Phase 9: Flutter - Auth Screens (Goal: User interface)
-- [ ] T9.1: Create SignupScreen (Complexity: Medium)
+- [x] T9.1: Create SignupScreen (Complexity: Medium)
   - Description: Create `ui/lib/screens/signup_screen.dart` with email/password form, validation, register action
   - Dependencies: T8.2
   - Acceptance: Form validates input, shows loading state, navigates to login on success, shows errors
   - Notes: Password strength indicator, confirm password field
 
-- [ ] T9.2: Create ForgotPasswordScreen (Complexity: Simple)
+- [x] T9.2: Create ForgotPasswordScreen (Complexity: Simple)
   - Description: Create `ui/lib/screens/forgot_password_screen.dart` with email input form
   - Dependencies: T8.2
   - Acceptance: Email validated, submits request, shows success message
   - Notes: Always show success to prevent enumeration
 
-- [ ] T9.3: Create ResetPasswordScreen (Complexity: Medium)
+- [x] T9.3: Create ResetPasswordScreen (Complexity: Medium)
   - Description: Create `ui/lib/screens/reset_password_screen.dart` with new password form, token from deep link
   - Dependencies: T8.2
   - Acceptance: Extracts token from URL, validates password, resets and redirects to login
   - Notes: Handle invalid/expired token gracefully
 
-- [ ] T9.4: Update LoginScreen with navigation links (Complexity: Simple)
+- [x] T9.4: Update LoginScreen with navigation links (Complexity: Simple)
   - Description: Add "Create account" and "Forgot password?" links to login screen
   - Dependencies: T9.1, T9.2
   - Acceptance: Links navigate to signup and forgot-password screens
   - Notes: Match existing design patterns
 
-- [ ] T9.5: Update AuthGate for new navigation flows (Complexity: Medium)
+- [x] T9.5: Update AuthGate for new navigation flows (Complexity: Medium)
   - Description: Update `ui/lib/main.dart` or navigation config for auth flow navigation
   - Dependencies: T9.1, T9.2, T9.3, T9.4
   - Acceptance: Can navigate between all auth screens, back navigation works
@@ -273,10 +273,10 @@
   - Notes: Include role field
 
 ## Rollup
-- Open Tasks: 9
-- Completed Tasks: 33
+- Open Tasks: 4
+- Completed Tasks: 38
 - Blockers: none
-- Next Priority: T9.1 (Flutter SignupScreen)
+- Next Priority: T10.1 (Deep link handling for password reset)
 
 ## Notes
 - Backend (T1.1-T6.4) can be developed independently from frontend (T7.1-T10.4)

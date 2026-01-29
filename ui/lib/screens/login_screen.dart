@@ -5,7 +5,14 @@ import '../providers/auth_provider.dart';
 
 /// Login screen with email/password form.
 class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+  final VoidCallback? onNavigateToSignup;
+  final VoidCallback? onNavigateToForgotPassword;
+
+  const LoginScreen({
+    super.key,
+    this.onNavigateToSignup,
+    this.onNavigateToForgotPassword,
+  });
 
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
@@ -141,7 +148,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     validator: _validatePassword,
                     onFieldSubmitted: (_) => _submit(),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 16),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: isLoading ? null : widget.onNavigateToForgotPassword,
+                      child: const Text('Forgot password?'),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: isLoading ? null : _submit,
                     child: isLoading
@@ -151,6 +166,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Text('Sign In'),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Don't have an account? ",
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      TextButton(
+                        onPressed: isLoading ? null : widget.onNavigateToSignup,
+                        child: const Text('Sign up'),
+                      ),
+                    ],
                   ),
                 ],
               ),
