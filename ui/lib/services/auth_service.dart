@@ -294,4 +294,9 @@ class AuthService {
     final token = await _storageService.getToken();
     return token != null;
   }
+
+  /// Returns the current access token expiry time, if available.
+  Future<DateTime?> getTokenExpiry() async {
+    return _storageService.getTokenExpiry();
+  }
 }

@@ -198,19 +198,19 @@
   - Notes: Follow existing service patterns
 
 ### Phase 8: Flutter - Auth Provider & State (Goal: State management)
-- [ ] T8.1: Extend AuthState for new flows (Complexity: Medium)
+- [x] T8.1: Extend AuthState for new flows (Complexity: Medium)
   - Description: Update `ui/lib/providers/auth_provider.dart` with AuthRegistering, AuthPasswordResetRequested, AuthPasswordResetSuccess states
   - Dependencies: T7.4
   - Acceptance: New states defined, can transition between them
   - Notes: Follow existing sealed class pattern
 
-- [ ] T8.2: Extend AuthNotifier with new actions (Complexity: Medium)
+- [x] T8.2: Extend AuthNotifier with new actions (Complexity: Medium)
   - Description: Add `register()`, `requestPasswordReset()`, `resetPassword()` actions to AuthNotifier
   - Dependencies: T8.1
   - Acceptance: Actions update state correctly, handle success/error
   - Notes: Use ref.listen for side effects (navigation, snackbars)
 
-- [ ] T8.3: Add auto-refresh logic to AuthNotifier (Complexity: Complex)
+- [x] T8.3: Add auto-refresh logic to AuthNotifier (Complexity: Complex)
   - Description: Implement proactive token refresh before access token expires
   - Dependencies: T7.3
   - Acceptance: Token refreshed automatically ~1min before expiry, seamless UX
@@ -273,10 +273,10 @@
   - Notes: Include role field
 
 ## Rollup
-- Open Tasks: 12
-- Completed Tasks: 30
+- Open Tasks: 9
+- Completed Tasks: 33
 - Blockers: none
-- Next Priority: T8.1 (Flutter AuthState for new flows)
+- Next Priority: T9.1 (Flutter SignupScreen)
 
 ## Notes
 - Backend (T1.1-T6.4) can be developed independently from frontend (T7.1-T10.4)
