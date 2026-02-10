@@ -41,6 +41,10 @@ ui/                # Flutter web app
     screens/       # UI screens
     widgets/       # Reusable widgets
   tests/
+
+e2e/               # Playwright E2E tests (Bun + @playwright/test)
+  tests/           # Test specs
+  playwright.config.ts
 ```
 
 ## Backend Architecture Patterns
@@ -122,6 +126,19 @@ flutter pub get      # Get dependencies
 flutter run -d chrome  # Run in Chrome browser
 flutter test         # Run tests
 ```
+
+### E2E Tests (e2e/)
+```bash
+cd e2e
+bun install                        # Install dependencies
+bunx playwright install --with-deps chromium  # Install browsers
+bunx playwright test               # Run all tests (all browsers)
+bunx playwright test --project=chromium  # Run chromium only
+bun run test:ui                    # Interactive UI mode
+bun run report                     # View last HTML report
+```
+
+**Note**: The Playwright config includes `webServer` entries that auto-start the backend (port 3000) and Flutter frontend (port 8080) if they aren't already running. During local dev, existing servers are reused.
 
 ## Data Model
 
