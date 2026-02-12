@@ -13,8 +13,8 @@
  *   bun run seed:test
  */
 
-import { createUser, getUserByEmail } from "../../src/modules/auth/service.ts";
-import { closeDb } from "../../src/database/connection.ts";
+import { createUser, getUserByEmail } from "../../webapi/src/modules/auth/service.ts";
+import { closeDb } from "../../webapi/src/database/connection.ts";
 import { getLogger } from "@logtape/logtape";
 
 const logger = await getLogger("seed-test-users");

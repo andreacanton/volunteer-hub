@@ -11,13 +11,7 @@
     "start": "bun src/index.ts",
     "migrate": "bun src/database/migrate.ts",
     "test": "bun test",
-    "test:bruno": "cd tests/bruno && bru run --env local",
-    "test:bruno:ci": "cd tests/bruno && bru run --env local --reporter-junit ../../results/bruno-junit.xml",
-    "test:bruno:health": "cd tests/bruno && bru run Health --env local",
-    "test:bruno:auth": "cd tests/bruno && bru run Auth --env local",
-    "test:bruno:user": "cd tests/bruno && bru run User --env local",
-    "test:all": "bun test && bun run test:bruno",
-    "seed:test": "bun run tests/bruno/seed-test-users.ts",
+    "test:all": "bun test",
     "lint": "eslint src/ tests/",
     "format": "prettier --write src/ tests/"
   },
@@ -27,7 +21,6 @@
     "@types/nodemailer": "^7.0.5",
     "@typescript-eslint/eslint-plugin": "^8.53.1",
     "@typescript-eslint/parser": "^8.53.1",
-    "@usebruno/cli": "^3.0.3",
     "eslint": "^9.39.2",
     "prettier": "^3.8.1"
   },
