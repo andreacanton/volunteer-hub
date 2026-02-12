@@ -104,6 +104,14 @@ LOG_LEVEL=info  # trace|debug|info|warning|error|fatal
 
 ## Common Commands
 
+### Root (from project root)
+```bash
+bun run test:webapi  # Run backend tests
+bun run test:ui      # Run Flutter tests
+bun run test:e2e     # Run Playwright E2E tests
+bun run test         # Run all tests (webapi + ui + e2e)
+```
+
 ### Backend (webapi/)
 ```bash
 cd webapi
