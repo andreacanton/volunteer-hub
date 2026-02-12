@@ -1,5 +1,6 @@
 import { getDb } from "../../database/connection.ts";
 import { UserRole } from "../../constants/userRole.ts";
+import { toUserResponse, type UserResponse } from "../auth/service.ts";
 
 /**
  * User entity as stored in database.
@@ -9,14 +10,16 @@ export interface User {
   email: string;
   password_hash: string;
   role: UserRole;
+  first_name: string;
+  last_name: string;
   created_at: string;
   updated_at: string;
 }
 
 /**
- * User without sensitive fields (password_hash).
+ * User without sensitive fields, camelCase for API.
  */
-export type SafeUser = Omit<User, "password_hash">;
+export type SafeUser = UserResponse;
 
 /**
  * Parameters for updating a user profile.
@@ -47,8 +50,7 @@ export function getSafeUserById(id: string): SafeUser | null {
     return null;
   }
 
-  const { password_hash, ...safeUser } = user;
-  return safeUser;
+  return toUserResponse(user);
 }
 
 /**

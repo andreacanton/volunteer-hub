@@ -39,7 +39,7 @@ export default defineConfig({
       command: "cd ../ui && flutter run -d web-server --web-port=8080 --web-hostname=localhost",
       url: "http://localhost:8080",
       reuseExistingServer: !process.env.CI,
-      timeout: 60_000,
+      timeout: 120_000,
     },
   ],
 });

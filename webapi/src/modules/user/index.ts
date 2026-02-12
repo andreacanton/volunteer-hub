@@ -9,8 +9,10 @@ const UserResponseSchema = t.Object({
   id: t.String(),
   email: t.String(),
   role: t.String(),
-  created_at: t.String(),
-  updated_at: t.String(),
+  firstName: t.String(),
+  lastName: t.String(),
+  createdAt: t.String(),
+  updatedAt: t.String(),
 });
 
 // Request schemas

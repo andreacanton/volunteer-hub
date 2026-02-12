@@ -11,8 +11,38 @@ export interface User {
   email: string;
   password_hash: string;
   role: UserRole;
+  first_name: string;
+  last_name: string;
   created_at: string;
   updated_at: string;
+}
+
+/**
+ * User response with camelCase keys for API consumers.
+ */
+export interface UserResponse {
+  id: string;
+  email: string;
+  role: UserRole;
+  firstName: string;
+  lastName: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Transforms a DB user (snake_case) to an API response (camelCase), omitting password_hash.
+ */
+export function toUserResponse(user: User | Omit<User, "password_hash">): UserResponse {
+  return {
+    id: user.id,
+    email: user.email,
+    role: user.role as UserRole,
+    firstName: user.first_name,
+    lastName: user.last_name,
+    createdAt: user.created_at,
+    updatedAt: user.updated_at,
+  };
 }
 
 /**
@@ -30,7 +60,7 @@ export interface CreateUserParams {
  * @returns The created user (without password_hash)
  * @throws Error if email already exists or database operation fails
  */
-export async function createUser(params: CreateUserParams): Promise<Omit<User, "password_hash">> {
+export async function createUser(params: CreateUserParams): Promise<UserResponse> {
   const db = getDb();
   const id = generateToken(16); // 32 character hex string
   const passwordHash = await Bun.password.hash(params.password, {
@@ -52,8 +82,7 @@ export async function createUser(params: CreateUserParams): Promise<Omit<User, "
     throw new Error("Failed to create user");
   }
 
-  const { password_hash, ...userWithoutPassword } = user;
-  return userWithoutPassword;
+  return toUserResponse(user);
 }
 
 /**
@@ -87,7 +116,7 @@ export function getUserByEmail(email: string): User | null {
 export async function validateCredentials(
   email: string,
   password: string
-): Promise<Omit<User, "password_hash"> | null> {
+): Promise<UserResponse | null> {
   const user = getUserByEmail(email);
   if (!user) {
     return null;
@@ -98,8 +127,7 @@ export async function validateCredentials(
     return null;
   }
 
-  const { password_hash, ...userWithoutPassword } = user;
-  return userWithoutPassword;
+  return toUserResponse(user);
 }
 
 /**

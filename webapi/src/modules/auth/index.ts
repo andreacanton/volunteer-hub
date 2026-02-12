@@ -6,6 +6,7 @@ import {
   getUserByEmail,
   getUserById,
   validateCredentials,
+  toUserResponse,
   createRefreshToken,
   validateRefreshToken,
   revokeRefreshToken,
@@ -72,8 +73,10 @@ const UserResponseSchema = t.Object({
   id: t.String(),
   email: t.String(),
   role: t.String(),
-  created_at: t.String(),
-  updated_at: t.String(),
+  firstName: t.String(),
+  lastName: t.String(),
+  createdAt: t.String(),
+  updatedAt: t.String(),
 });
 
 const RegisterResponseSchema = t.Object({
@@ -229,13 +232,10 @@ export const authModule = new Elysia({ prefix: "/auth" })
       // Create new refresh token
       const { token: newRefreshToken } = createRefreshToken(user.id);
 
-      // Return user without password_hash
-      const { password_hash, ...userWithoutPassword } = user;
-
       return success({
         accessToken,
         refreshToken: newRefreshToken,
-        user: userWithoutPassword,
+        user: toUserResponse(user),
       });
     },
     {

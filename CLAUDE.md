@@ -11,6 +11,8 @@ Volunteer Attendance Management - a full-stack application for coordinating char
 - **Auth**: JWT tokens (HS256, 24h expiration)
 - **API**: RESTful with `/api/v1/` prefix
 - **Logging**: LogTape (@logtape/logtape)
+- **E2E**: bun + playwright e2e
+- **API testing**: bruno .vscode/bruno-collections
 
 ## Project Structure
 
@@ -68,15 +70,15 @@ e2e/               # Playwright E2E tests (Bun + @playwright/test)
 ```
 
 ### Error Codes
-| Code | HTTP | Description |
-|------|------|-------------|
-| VALIDATION_ERROR | 400 | Invalid request data |
-| AUTH_TOKEN_MISSING | 401 | No Authorization header |
-| AUTH_TOKEN_INVALID | 401 | Malformed or invalid token |
-| AUTH_TOKEN_EXPIRED | 401 | Token past expiration |
-| RESOURCE_NOT_FOUND | 404 | Entity not found |
-| DATABASE_ERROR | 500 | Database operation failed |
-| INTERNAL_ERROR | 500 | Unexpected server error |
+| Code               | HTTP | Description                |
+| ------------------ | ---- | -------------------------- |
+| VALIDATION_ERROR   | 400  | Invalid request data       |
+| AUTH_TOKEN_MISSING | 401  | No Authorization header    |
+| AUTH_TOKEN_INVALID | 401  | Malformed or invalid token |
+| AUTH_TOKEN_EXPIRED | 401  | Token past expiration      |
+| RESOURCE_NOT_FOUND | 404  | Entity not found           |
+| DATABASE_ERROR     | 500  | Database operation failed  |
+| INTERNAL_ERROR     | 500  | Unexpected server error    |
 
 ### Key Dependencies
 - `elysia` - Web framework

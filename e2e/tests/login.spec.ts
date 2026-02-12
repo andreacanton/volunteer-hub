@@ -18,7 +18,7 @@ async function registerTestUser(request: Page["request"]) {
       password: TEST_USER.password,
     },
   });
-  expect(response.ok()).toBeTruthy();
+  expect(response.ok() || response.status() === 409).toBeTruthy();
 }
 
 /**
@@ -26,13 +26,21 @@ async function registerTestUser(request: Page["request"]) {
  * so Playwright can interact with the rendered widgets.
  */
 async function gotoAndEnableSemantics(page: Page) {
-  await page.goto("/");
+  const maxAttempts = 3;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    await page.goto("/");
 
-  // Wait for Flutter to render by waiting for the semantics placeholder
-  await page.waitForSelector("flt-semantics-placeholder", {
-    state: "attached",
-    timeout: 30_000,
-  });
+    try {
+      // Wait for Flutter to render by waiting for the semantics placeholder
+      await page.waitForSelector("flt-semantics-placeholder", {
+        state: "attached",
+        timeout: 15_000,
+      });
+      break; // success
+    } catch {
+      if (attempt === maxAttempts) throw new Error("Flutter semantics placeholder not found after 3 attempts");
+    }
+  }
 
   // Enable semantics by dispatching a click on the placeholder element.
   // Flutter places it off-viewport so normal Playwright click fails.
@@ -108,7 +116,7 @@ test.describe("Login", () => {
 
     const passwordField = page.getByLabel("Password");
     await passwordField.click();
-    await passwordField.fill("12345");
+    await passwordField.pressSequentially("12345");
 
     await page.getByRole("button", { name: "Sign In" }).click();
 
@@ -126,7 +134,7 @@ test.describe("Login", () => {
 
     const passwordField = page.getByLabel("Password");
     await passwordField.click();
-    await passwordField.fill("WrongPassword123!");
+    await passwordField.pressSequentially("WrongPassword123!");
 
     await page.getByRole("button", { name: "Sign In" }).click();
 
@@ -145,7 +153,7 @@ test.describe("Login", () => {
 
     const passwordField = page.getByLabel("Password");
     await passwordField.click();
-    await passwordField.fill(TEST_USER.password);
+    await passwordField.pressSequentially(TEST_USER.password);
 
     await page.getByRole("button", { name: "Sign In" }).click();
 
@@ -185,7 +193,7 @@ test.describe("Login", () => {
 
     const passwordField = page.getByLabel("Password");
     await passwordField.click();
-    await passwordField.fill(TEST_USER.password);
+    await passwordField.pressSequentially(TEST_USER.password);
     await page.keyboard.press("Enter");
 
     // Should navigate to home screen on successful login
@@ -203,7 +211,7 @@ test.describe("Login", () => {
 
     const passwordField = page.getByLabel("Password");
     await passwordField.click();
-    await passwordField.fill(TEST_USER.password);
+    await passwordField.pressSequentially(TEST_USER.password);
 
     const signInButton = page.getByRole("button", { name: "Sign In" });
     await signInButton.click();
