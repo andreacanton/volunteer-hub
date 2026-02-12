@@ -112,6 +112,11 @@ bun run test:webapi  # Run backend tests
 bun run test:ui      # Run Flutter tests
 bun run test:e2e     # Run Playwright E2E tests
 bun run test         # Run all tests (webapi + ui + e2e)
+bun run test:bruno        # Run all Bruno API tests
+bun run test:bruno:health # Run Bruno health tests
+bun run test:bruno:auth   # Run Bruno auth tests
+bun run test:bruno:user   # Run Bruno user tests
+bun run seed:test         # Seed test users for Bruno tests
 ```
 
 ### Backend (webapi/)
@@ -123,7 +128,6 @@ bun run migrate      # Run database migrations
 bun run build        # Build for production
 bun run start        # Start production server
 bun test             # Run tests
-bun run test:bruno:auth  # Run Bruno API tests for auth
 bun run lint         # Run ESLint
 ```
 
