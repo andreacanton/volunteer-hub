@@ -18,22 +18,8 @@ void main() {
 }
 
 /// Root application widget.
-class VolunteerHubApp extends ConsumerStatefulWidget {
+class VolunteerHubApp extends StatelessWidget {
   const VolunteerHubApp({super.key});
-
-  @override
-  ConsumerState<VolunteerHubApp> createState() => _VolunteerHubAppState();
-}
-
-class _VolunteerHubAppState extends ConsumerState<VolunteerHubApp> {
-  @override
-  void initState() {
-    super.initState();
-    // Initialize auth state on app start
-    Future.microtask(() {
-      ref.read(authProvider.notifier).initialize();
-    });
-  }
 
   @override
   Widget build(BuildContext context) {

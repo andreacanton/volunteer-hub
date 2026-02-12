@@ -91,6 +91,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   AuthNotifier(this._authService) : super(const AuthInitial()) {
     _setupSessionExpiredCallback();
+    initialize();
   }
 
   /// Creates a notifier in loading state (used during initialization).
