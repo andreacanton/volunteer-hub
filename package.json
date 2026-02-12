@@ -1,0 +1,11 @@
+{
+  "name": "volunteer-hub",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test:webapi": "bun test --cwd webapi",
+    "test:ui": "cd ui && flutter test",
+    "test:e2e": "bun run --cwd e2e test",
+    "test": "bun run test:webapi && bun run test:ui && bun run test:e2e"
+  }
+}
