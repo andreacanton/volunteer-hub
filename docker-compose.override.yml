@@ -1,0 +1,7 @@
+services:
+  webapi:
+    ports:
+      - "${PORT:-3000}:3000"
+      - "6499:6499"
+    environment:
+      - LOG_LEVEL=debug
