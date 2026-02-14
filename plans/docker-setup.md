@@ -1,4 +1,4 @@
-# Plan: Dockerize Development Environment
+# Plan: Containerize Development Environment (Podman)
 
 ## Goal
 
@@ -12,7 +12,7 @@ Containerize the volunteer-hub application so that the backend (and optionally a
 - **Frontend (ui)**: Flutter mobile app. Mobile development requires emulators/physical devices, which don't work inside containers. The plan supports two options for Flutter:
   1. Run Flutter natively on the host, pointing at the containerized backend (recommended for day-to-day mobile development).
   2. Build and serve Flutter **web** inside a container for quick browser-based testing.
-- **Database**: SQLite is file-based — needs a Docker volume for persistence across container restarts.
+- **Database**: SQLite is file-based — needs a Podman volume for persistence across container restarts.
 - **No external services** (Postgres, Redis, etc.) are needed — SQLite is embedded.
 
 ---
@@ -25,7 +25,7 @@ Containerize the volunteer-hub application so that the backend (and optionally a
 | `ui/Dockerfile` | Dockerfile for Flutter web build (optional, for browser testing) |
 | `docker-compose.yml` | Orchestrates services, volumes, networking |
 | `docker-compose.override.yml` | Dev-specific overrides (hot reload, source mounts) |
-| `.dockerignore` | Root-level ignore file for Docker context |
+| `.dockerignore` | Root-level ignore file for build context |
 | `webapi/.dockerignore` | Backend-specific ignore (node_modules, database files, .env) |
 
 ---
@@ -36,7 +36,7 @@ Containerize the volunteer-hub application so that the backend (and optionally a
 
 Multi-stage build with two targets:
 
-**Stage `dev`** (default for docker-compose):
+**Stage `dev`** (default for podman compose):
 - Base image: `oven/bun:1` (official Bun image, Debian-based)
 - Set `WORKDIR /app`
 - Copy `package.json` and `bun.lock` first (layer caching for deps)
@@ -97,7 +97,7 @@ services:
       webapi:
         condition: service_healthy
     profiles:
-      - web  # Only starts with: docker compose --profile web up
+      - web  # Only starts with: podman compose --profile web up
 
 volumes:
   webapi-db:
@@ -105,14 +105,14 @@ volumes:
 
 Key design decisions:
 - **Source mounts** (`./webapi/src:/app/src`) enable hot reload without rebuilding the container.
-- **Named volume** (`webapi-db`) persists SQLite data across `docker compose down` / `up` cycles.
+- **Named volume** (`webapi-db`) persists SQLite data across `podman compose down` / `up` cycles.
 - **Default JWT_SECRET** set for development convenience — production must override.
 - **Health check** hits the existing `/api/v1/health` endpoint.
 - **Flutter web uses a profile** (`--profile web`) so it doesn't start by default, since most developers will run Flutter natively.
 
 ### Step 4: Create `docker-compose.override.yml`
 
-Dev-specific overrides that are auto-loaded by `docker compose`:
+Dev-specific overrides that are auto-loaded by `podman compose`:
 
 ```yaml
 services:
@@ -174,23 +174,23 @@ The Dockerfile will `COPY entrypoint.sh` and set `ENTRYPOINT ["./entrypoint.sh"]
 
 ### Step 7: Update documentation
 
-Add a **Docker** section to the root `README.md` with:
+Add a **Podman** section to the root `README.md` with:
 
 ```bash
 # Start backend only (most common for development)
-docker compose up
+podman compose up
 
 # Start backend + Flutter web
-docker compose --profile web up
+podman compose --profile web up
 
 # Rebuild after dependency changes
-docker compose build
+podman compose build
 
 # Reset database
-docker compose down -v   # removes named volumes
+podman compose down -v   # removes named volumes
 
 # View logs
-docker compose logs -f webapi
+podman compose logs -f webapi
 ```
 
 ---
@@ -198,7 +198,7 @@ docker compose logs -f webapi
 ## Network & Service Communication
 
 - The Flutter mobile app (running natively on the host or emulator) connects to the backend at `http://localhost:3000`.
-- The Flutter web build (inside Docker, if used) connects to the backend via Docker networking at `http://webapi:3000` — this will require the `ui/lib/config/env.dart` API base URL to be configurable (it likely already is via `EnvConfig`).
+- The Flutter web build (inside Podman, if used) connects to the backend via container networking at `http://webapi:3000` — this will require the `ui/lib/config/env.dart` API base URL to be configurable (it likely already is via `EnvConfig`).
 - No reverse proxy is needed for development.
 
 ---
@@ -206,19 +206,19 @@ docker compose logs -f webapi
 ## What This Plan Does NOT Include
 
 - **Production deployment** (Kubernetes, cloud hosting) — out of scope.
-- **Flutter mobile in Docker** — impractical without GPU/emulator passthrough.
-- **CI/CD Docker builds** — the GitHub Actions workflows already exist; Docker CI images can be added later.
+- **Flutter mobile in containers** — impractical without GPU/emulator passthrough.
+- **CI/CD container builds** — the GitHub Actions workflows already exist; container CI images can be added later.
 - **Nginx reverse proxy** — not needed for local development.
-- **Multi-architecture builds** — can be added later with `docker buildx`.
+- **Multi-architecture builds** — can be added later with `podman build --platform`.
 
 ---
 
 ## Verification
 
 After implementation, verify:
-1. `docker compose up` starts the backend successfully
+1. `podman compose up` starts the backend successfully
 2. `curl http://localhost:3000/api/v1/health` returns a healthy response
 3. Editing a file in `webapi/src/` triggers hot reload inside the container
-4. `docker compose down && docker compose up` preserves the database
-5. `docker compose down -v && docker compose up` starts with a fresh database
-6. (Optional) `docker compose --profile web up` serves Flutter web at `http://localhost:8080`
+4. `podman compose down && podman compose up` preserves the database
+5. `podman compose down -v && podman compose up` starts with a fresh database
+6. (Optional) `podman compose --profile web up` serves Flutter web at `http://localhost:8080`
