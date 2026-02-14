@@ -1,0 +1,24 @@
+services:
+  webapi:
+    build:
+      context: ./webapi
+      target: dev
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=development
+      - JWT_SECRET=${JWT_SECRET:-dev-secret-key-minimum-32-characters-long}
+      - DATABASE_PATH=/app/database/volunteer-hub.db
+      - LOG_LEVEL=${LOG_LEVEL:-debug}
+    volumes:
+      - ./webapi/src:/app/src
+      - ./webapi/migrations:/app/migrations
+      - webapi-db:/app/database
+    healthcheck:
+      test: ["CMD", "bun", "-e", "const r = await fetch('http://localhost:3000/api/v1/health'); if (!r.ok) process.exit(1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  webapi-db:

@@ -38,7 +38,7 @@
   - Acceptance: Container starts by running migrations first, then the application.
 
 ### Phase 3: Compose (Goal: Orchestrate services with a single command)
-- [ ] T3.1: Create `docker-compose.yml` (Complexity: Medium)
+- [x] T3.1: Create `docker-compose.yml` (Complexity: Medium)
   - Description: Define `webapi` service with build context, dev target, port mapping (${PORT:-3000}:3000), environment variables (NODE_ENV, JWT_SECRET, DATABASE_PATH, LOG_LEVEL), source mounts for hot reload (src/, migrations/), named volume for SQLite persistence (webapi-db), and health check hitting /api/v1/health.
   - Dependencies: T1.1, T2.2
   - Acceptance: `podman compose up` starts the backend; `curl http://localhost:3000/api/v1/health` returns healthy.
@@ -48,7 +48,7 @@
   - Dependencies: T3.1, T4.1
   - Acceptance: `podman compose --profile web up` builds and serves Flutter web at http://localhost:8080.
 
-- [ ] T3.3: Create `docker-compose.override.yml` (Complexity: Simple)
+- [x] T3.3: Create `docker-compose.override.yml` (Complexity: Simple)
   - Description: Add dev-specific overrides: expose Bun debugger port 6499:6499, set LOG_LEVEL=debug.
   - Dependencies: T3.1
   - Acceptance: `podman compose config` shows merged configuration with debug port and log level.
@@ -95,7 +95,7 @@
   - Notes: Optional — only if ui/Dockerfile was created.
 
 ## Rollup
-- Open Tasks: 9
-- Completed Tasks: 5
-- Blockers: none
-- Next Priority: T3.1
+- Open Tasks: 7
+- Completed Tasks: 7
+- Blockers: T3.2 blocked by T4.1
+- Next Priority: T4.1
