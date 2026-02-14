@@ -92,6 +92,29 @@ flutter run -d android
 flutter run
 ```
 
+## Podman / Docker
+
+The project includes container support for local development using Podman (or Docker).
+
+```bash
+# Start the backend
+podman compose up
+
+# Start backend + Flutter web (browser testing)
+podman compose --profile web up
+
+# Rebuild after dependency changes
+podman compose build
+
+# View logs
+podman compose logs -f webapi
+
+# Reset database (removes named volumes)
+podman compose down -v
+```
+
+The backend runs at `http://localhost:3000` with hot reload via source mounts. SQLite data persists across restarts unless volumes are removed. The optional Flutter web service serves at `http://localhost:8080`.
+
 ## Usage
 
 ### For Volunteers
