@@ -1,0 +1,50 @@
+meta {
+  name: Logout Invalid Token
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{base_url}}/auth/logout
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refreshToken": "invalid-token-that-never-existed"
+  }
+}
+
+tests {
+  test("should return 200 status even for invalid token", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("should have standard API response format", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('success');
+    expect(body).to.have.property('data');
+    expect(body).to.have.property('error');
+    expect(body).to.have.property('timestamp');
+  });
+
+  test("should indicate success (graceful handling)", function() {
+    const body = res.getBody();
+    expect(body.success).to.be.true;
+    expect(body.error).to.be.null;
+  });
+
+  test("should return success message", function() {
+    const body = res.getBody();
+    expect(body.data).to.have.property('message');
+    expect(body.data.message).to.include('Logged out');
+  });
+}
+
+docs {
+  # Logout Invalid Token Test
+
+  This test verifies that logout handles invalid tokens gracefully.
+  Even with a completely invalid token, it returns success (idempotent behavior).
+}

@@ -24,6 +24,10 @@ const EnvSchema = t.Object({
 
   JWT_EXPIRES_IN: t.String({ default: "24h" }),
 
+  JWT_REFRESH_EXPIRES_IN: t.String({ default: "7d" }),
+
+  PASSWORD_RESET_EXPIRES_IN: t.String({ default: "1h" }),
+
   DATABASE_PATH: t.String({ default: "./database/volunteer-hub.db" }),
 
   LOG_LEVEL: t.Union(
@@ -37,6 +41,19 @@ const EnvSchema = t.Object({
     ],
     { default: "info" }
   ),
+
+  // SMTP configuration (optional - password reset disabled if not configured)
+  SMTP_HOST: t.Optional(t.String()),
+  SMTP_PORT: t.Optional(
+    t.Transform(t.String())
+      .Decode((v) => parseInt(v, 10))
+      .Encode((v) => String(v))
+  ),
+  SMTP_USER: t.Optional(t.String()),
+  SMTP_PASS: t.Optional(t.String()),
+  SMTP_FROM: t.Optional(t.String()),
+
+  FRONTEND_URL: t.String({ default: "http://localhost:8080" }),
 });
 
 export type Env = Static<typeof EnvSchema>;
@@ -51,8 +68,16 @@ export function loadEnv(): Env {
     PORT: process.env.PORT ?? "3000",
     NODE_ENV: process.env.NODE_ENV ?? "development",
     JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN ?? "24h",
+    JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN ?? "7d",
+    PASSWORD_RESET_EXPIRES_IN: process.env.PASSWORD_RESET_EXPIRES_IN ?? "1h",
     DATABASE_PATH: process.env.DATABASE_PATH ?? "./database/volunteer-hub.db",
     LOG_LEVEL: process.env.LOG_LEVEL ?? "info",
+    SMTP_HOST: process.env.SMTP_HOST,
+    SMTP_PORT: process.env.SMTP_PORT,
+    SMTP_USER: process.env.SMTP_USER,
+    SMTP_PASS: process.env.SMTP_PASS,
+    SMTP_FROM: process.env.SMTP_FROM,
+    FRONTEND_URL: process.env.FRONTEND_URL ?? "http://localhost:8080",
   };
 
   // Validate JWT_SECRET is present

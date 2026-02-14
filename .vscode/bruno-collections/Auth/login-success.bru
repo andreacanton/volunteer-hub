@@ -1,0 +1,95 @@
+meta {
+  name: Login Success
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "test-user@example.com",
+    "password": "{{test_password}}"
+  }
+}
+
+script:post-response {
+  // Capture tokens for use in protected endpoint tests
+  if (res.getStatus() === 200) {
+    const body = res.getBody();
+    bru.setVar("auth_token", body.data.accessToken);
+    bru.setVar("refresh_token", body.data.refreshToken);
+  }
+}
+
+tests {
+  test("should return 200 status", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("should have standard API response format", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('success');
+    expect(body).to.have.property('data');
+    expect(body).to.have.property('error');
+    expect(body).to.have.property('timestamp');
+  });
+  
+  test("should indicate success", function() {
+    const body = res.getBody();
+    expect(body.success).to.be.true;
+    expect(body.error).to.be.null;
+  });
+  
+  test("should return access token", function() {
+    const body = res.getBody();
+    expect(body.data).to.have.property('accessToken');
+    expect(body.data.accessToken).to.be.a('string');
+    expect(body.data.accessToken).to.have.lengthOf.at.least(1);
+  });
+  
+  test("should return refresh token", function() {
+    const body = res.getBody();
+    expect(body.data).to.have.property('refreshToken');
+    expect(body.data.refreshToken).to.be.a('string');
+    expect(body.data.refreshToken).to.have.lengthOf.at.least(1);
+  });
+  
+  test("should return user data", function() {
+    const body = res.getBody();
+    expect(body.data).to.have.property('user');
+    expect(body.data.user).to.be.an('object');
+  });
+  
+  test("should have user id, email, and role", function() {
+    const body = res.getBody();
+    const user = body.data.user;
+    expect(user).to.have.property('id');
+    expect(user).to.have.property('email');
+    expect(user).to.have.property('role');
+    expect(user.email).to.equal('test-user@example.com');
+    expect(user.role).to.equal('VOLUNTEER');
+  });
+  
+  test("access token should be valid JWT format", function() {
+    const body = res.getBody();
+    const token = body.data.accessToken;
+    const parts = token.split('.');
+    expect(parts).to.have.lengthOf(3);
+  });
+  
+}
+
+docs {
+  # Login Success Test
+  
+  This test verifies successful login with valid credentials.
+  
+  **Prerequisites:**
+  - The user `test-user@example.com` must exist in the database
+  - Run `bun run seed:test` to create the required test user
+}

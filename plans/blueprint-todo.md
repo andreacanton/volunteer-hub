@@ -29,7 +29,12 @@ List phases in order. Each phase contains tasks with IDs.
 ### Phase 2: <Name> (Goal: <short objective>)
 - [ ] T2.1: <Task title> (Complexity: Simple|Medium|Complex)
 - Description: <what to do>
-- Dependencies: <e.g., T1>
+- Dependencies: <e.g., T1.1>
+- Acceptance: <how to verify>
+- Notes: <optional>
+- [ ] T2.2: <Task title> (Complexity: Simple|Medium|Complex)
+- Description: <what to do>
+- Dependencies: <e.g., T1.1>
 - Acceptance: <how to verify>
 - Notes: <optional>
 

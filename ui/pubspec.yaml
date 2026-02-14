@@ -42,8 +42,8 @@ dependencies:
   flutter_riverpod: ^2.5.1
   riverpod_annotation: ^2.3.5
 
-  # Secure storage for JWT tokens
-  flutter_secure_storage: ^9.0.0
+  # Storage for JWT tokens (web-compatible)
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:

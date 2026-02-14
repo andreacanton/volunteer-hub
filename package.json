@@ -1,0 +1,20 @@
+{
+  "name": "volunteer-hub",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test:webapi": "bun test --cwd webapi",
+    "test:ui": "cd ui && flutter test",
+    "test:e2e": "bun run --cwd e2e test",
+    "test": "bun run test:webapi && bun run test:ui && bun run test:e2e",
+    "test:bruno": "cd .vscode/bruno-collections && bru run --env local",
+    "test:bruno:ci": "cd .vscode/bruno-collections && bru run --env local --reporter-junit ../../webapi/results/bruno-junit.xml",
+    "test:bruno:health": "cd .vscode/bruno-collections && bru run Health --env local",
+    "test:bruno:auth": "cd .vscode/bruno-collections && bru run Auth --env local",
+    "test:bruno:user": "cd .vscode/bruno-collections && bru run User --env local",
+    "seed:test": "bun run .vscode/bruno-collections/seed-test-users.ts"
+  },
+  "devDependencies": {
+    "@usebruno/cli": "^3.0.3"
+  }
+}

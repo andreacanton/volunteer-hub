@@ -1,0 +1,62 @@
+meta {
+  name: Register Duplicate User
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "duplicate-test@example.com",
+    "password": "{{test_password}}",
+    "firstName": "Duplicate",
+    "lastName": "Test"
+  }
+}
+
+docs {
+  # Register Duplicate User Test
+
+  This test verifies that attempting to register with an existing email returns a 409 Conflict error.
+
+  **Prerequisites:**
+  - The email `duplicate-test@example.com` must already exist in the database
+  - Run `bun run seed:test` to create the required test user
+}
+
+tests {
+  test("should return 409 Conflict status", function() {
+    expect(res.getStatus()).to.equal(409);
+  });
+
+  test("should have standard API response format", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('success');
+    expect(body).to.have.property('data');
+    expect(body).to.have.property('error');
+    expect(body).to.have.property('timestamp');
+  });
+
+  test("should indicate failure", function() {
+    const body = res.getBody();
+    expect(body.success).to.be.false;
+    expect(body.data).to.be.null;
+  });
+
+  test("should have AUTH_USER_EXISTS error code", function() {
+    const body = res.getBody();
+    expect(body.error).to.be.an('object');
+    expect(body.error.code).to.equal('AUTH_USER_EXISTS');
+  });
+
+  test("should have error message about existing email", function() {
+    const body = res.getBody();
+    expect(body.error.message).to.exist;
+    expect(body.error.message.toLowerCase()).to.include('email');
+  });
+}

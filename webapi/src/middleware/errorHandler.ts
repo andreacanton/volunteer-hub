@@ -23,6 +23,7 @@ export class ApiError extends Error {
  * into the standard API response format.
  */
 export const errorHandler = new Elysia({ name: "errorHandler" }).onError(
+  { as: "global" },
   ({ code, error: err, set }) => {
     // Handle Elysia validation errors
     if (code === "VALIDATION") {
@@ -48,11 +49,13 @@ export const errorHandler = new Elysia({ name: "errorHandler" }).onError(
     // Handle unexpected errors
     logger.error("Unexpected error: {error}", { error: err });
     set.status = 500;
+    const message =
+      err instanceof Error ? err.message : "An unexpected error occurred";
     return error(
       ErrorCode.INTERNAL_ERROR,
       process.env.NODE_ENV === "production"
         ? "An unexpected error occurred"
-        : err.message || "An unexpected error occurred"
+        : message
     );
   }
 );
