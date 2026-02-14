@@ -43,7 +43,7 @@
   - Dependencies: T1.1, T2.2
   - Acceptance: `podman compose up` starts the backend; `curl http://localhost:3000/api/v1/health` returns healthy.
 
-- [ ] T3.2: Add optional Flutter web service to `docker-compose.yml` (Complexity: Medium)
+- [x] T3.2: Add optional Flutter web service to `docker-compose.yml` (Complexity: Medium)
   - Description: Add `ui-web` service using `./ui` build context, port 8080:80, depends_on webapi (service_healthy), gated behind `profiles: [web]` so it only starts with `--profile web`.
   - Dependencies: T3.1, T4.1
   - Acceptance: `podman compose --profile web up` builds and serves Flutter web at http://localhost:8080.
@@ -54,7 +54,7 @@
   - Acceptance: `podman compose config` shows merged configuration with debug port and log level.
 
 ### Phase 4: Flutter Web Dockerfile (Goal: Optional browser-based testing)
-- [ ] T4.1: Create `ui/Dockerfile` (Complexity: Medium)
+- [x] T4.1: Create `ui/Dockerfile` (Complexity: Medium)
   - Description: Use a Flutter SDK base image, copy pubspec.yaml and pubspec.lock, run `flutter pub get`, copy source, run `flutter build web`, then serve output from an `nginx:alpine` stage on port 80.
   - Dependencies: none
   - Acceptance: `podman build ./ui` succeeds and the built image serves Flutter web content.
@@ -95,7 +95,7 @@
   - Notes: Optional — only if ui/Dockerfile was created.
 
 ## Rollup
-- Open Tasks: 7
-- Completed Tasks: 7
-- Blockers: T3.2 blocked by T4.1
-- Next Priority: T4.1
+- Open Tasks: 5
+- Completed Tasks: 9
+- Blockers: none
+- Next Priority: T5.1

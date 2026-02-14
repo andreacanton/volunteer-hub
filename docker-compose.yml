@@ -20,5 +20,16 @@ services:
       timeout: 5s
       retries: 3
 
+  ui-web:
+    build:
+      context: ./ui
+    ports:
+      - "8080:80"
+    depends_on:
+      webapi:
+        condition: service_healthy
+    profiles:
+      - web
+
 volumes:
   webapi-db:
