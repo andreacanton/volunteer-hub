@@ -1,5 +1,5 @@
 # ---- Dev stage ----
-FROM docker.io/oven/bun:1 AS dev
+FROM docker.io/oven/bun:1.2.18 AS dev
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ CMD ["bun", "run", "dev"]
 
 
 # ---- Production stage ----
-FROM docker.io/oven/bun:1 AS production
+FROM docker.io/oven/bun:1.2.18 AS production
 
 WORKDIR /app
 
