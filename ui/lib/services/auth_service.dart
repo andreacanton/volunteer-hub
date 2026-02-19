@@ -30,12 +30,11 @@ class AuthService {
   void Function()? onSessionExpired;
 
   /// Handles tokens being refreshed by the interceptor.
-  void _handleTokensRefreshed(AuthToken authToken) {
-    // Persist the new tokens
-    _storageService.saveToken(authToken.accessToken);
-    _storageService.saveRefreshToken(authToken.refreshToken);
-    _storageService.saveTokenExpiry(authToken.expiresAt);
-    _storageService.saveUserData(jsonEncode(authToken.user.toJson()));
+  Future<void> _handleTokensRefreshed(AuthToken authToken) async {
+    await _storageService.saveToken(authToken.accessToken);
+    await _storageService.saveRefreshToken(authToken.refreshToken);
+    await _storageService.saveTokenExpiry(authToken.expiresAt);
+    await _storageService.saveUserData(jsonEncode(authToken.user.toJson()));
   }
 
   /// Handles token refresh failure.

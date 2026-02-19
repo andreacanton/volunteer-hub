@@ -7,7 +7,7 @@ import '../models/api_response.dart';
 import '../models/auth_token.dart';
 
 /// Callback type for when tokens are refreshed.
-typedef TokensRefreshedCallback = void Function(AuthToken authToken);
+typedef TokensRefreshedCallback = Future<void> Function(AuthToken authToken);
 
 /// Callback type for when token refresh fails.
 typedef RefreshFailedCallback = void Function();
@@ -250,8 +250,8 @@ class _TokenRefreshInterceptor extends Interceptor {
         _client.setAuthToken(authToken.accessToken);
         _client.setRefreshToken(authToken.refreshToken);
 
-        // Notify listeners about the new tokens
-        _client.onTokensRefreshed?.call(authToken);
+        // Notify listeners about the new tokens (awaited so storage persists before retry)
+        await _client.onTokensRefreshed?.call(authToken);
 
         return true;
       }

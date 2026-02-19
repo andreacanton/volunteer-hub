@@ -83,26 +83,25 @@ final authServiceProvider = FutureProvider<AuthService>((ref) async {
 
 /// Notifier managing authentication state.
 class AuthNotifier extends StateNotifier<AuthState> {
-  final AuthService? _authService;
+  AuthService? _authService;
   Timer? _refreshTimer;
 
   /// Duration before token expiry to trigger refresh (1 minute).
   static const _refreshBuffer = Duration(minutes: 1);
 
-  AuthNotifier(this._authService) : super(const AuthInitial()) {
-    _setupSessionExpiredCallback();
-    initialize();
+  AuthNotifier(Ref ref) : super(const AuthLoading()) {
+    _initWithRef(ref);
   }
 
-  /// Creates a notifier in loading state (used during initialization).
-  AuthNotifier._loading()
-      : _authService = null,
-        super(const AuthLoading());
-
-  /// Creates a notifier in error state (used when initialization fails).
-  AuthNotifier._error(String message)
-      : _authService = null,
-        super(AuthError(message));
+  Future<void> _initWithRef(Ref ref) async {
+    try {
+      _authService = await ref.read(authServiceProvider.future);
+      _setupSessionExpiredCallback();
+      await initialize();
+    } catch (e) {
+      state = AuthError(e.toString());
+    }
+  }
 
   /// Sets up the callback for when the session expires.
   void _setupSessionExpiredCallback() {
@@ -134,7 +133,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     if (_authService == null) return;
 
     try {
-      final authToken = await _authService.refreshToken();
+      final authToken = await _authService!.refreshToken();
       // Schedule next refresh based on new token expiry
       _scheduleTokenRefresh(authToken.expiresAt);
     } catch (e) {
@@ -160,11 +159,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     state = const AuthLoading();
     try {
-      final user = await _authService.restoreSession();
+      final user = await _authService!.restoreSession();
       if (user != null) {
         state = AuthAuthenticated(user);
         // Schedule token refresh based on stored expiry
-        final expiry = await _authService.getTokenExpiry();
+        final expiry = await _authService!.getTokenExpiry();
         if (expiry != null) {
           _scheduleTokenRefresh(expiry);
         }
@@ -185,10 +184,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     state = const AuthLoading();
     try {
-      final user = await _authService.login(email, password);
+      final user = await _authService!.login(email, password);
       state = AuthAuthenticated(user);
       // Schedule token refresh based on stored expiry
-      final expiry = await _authService.getTokenExpiry();
+      final expiry = await _authService!.getTokenExpiry();
       if (expiry != null) {
         _scheduleTokenRefresh(expiry);
       }
@@ -204,7 +203,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     _cancelRefreshTimer();
     if (_authService == null) return;
 
-    await _authService.logout();
+    await _authService!.logout();
     state = const AuthUnauthenticated();
   }
 
@@ -224,7 +223,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     state = const AuthRegistering();
     try {
-      await _authService.register(email, password);
+      await _authService!.register(email, password);
       state = const AuthRegistrationSuccess();
     } on ApiException catch (e) {
       state = AuthError(e.userMessage);
@@ -242,7 +241,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     state = const AuthLoading();
     try {
-      await _authService.requestPasswordReset(email);
+      await _authService!.requestPasswordReset(email);
       state = const AuthPasswordResetRequested();
     } on ApiException catch (e) {
       state = AuthError(e.userMessage);
@@ -260,7 +259,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     state = const AuthLoading();
     try {
-      await _authService.resetPassword(token, newPassword);
+      await _authService!.resetPassword(token, newPassword);
       state = const AuthPasswordResetSuccess();
     } on ApiException catch (e) {
       state = AuthError(e.userMessage);
@@ -276,15 +275,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
 }
 
 /// Provider for the auth state notifier.
-/// Returns AuthLoading while waiting for auth service initialization.
+/// Starts in AuthLoading and initializes asynchronously once the auth service
+/// is ready, preventing state loss from provider rebuilds during initialization.
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  final authServiceAsync = ref.watch(authServiceProvider);
-
-  return authServiceAsync.when(
-    data: (authService) => AuthNotifier(authService),
-    loading: () => AuthNotifier._loading(),
-    error: (error, stack) => AuthNotifier._error(error.toString()),
-  );
+  return AuthNotifier(ref);
 });
 
 /// Convenience provider to get the current user if authenticated.

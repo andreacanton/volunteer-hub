@@ -18,7 +18,7 @@ import {
 } from "./service.ts";
 import { UserRole } from "../../constants/userRole.ts";
 import type { JwtPayload } from "../../middleware/jwt.ts";
-import { sendPasswordResetEmail } from "../../services/email.ts";
+import { sendPasswordResetEmail } from "../../utils/email.ts";
 
 // Request schemas
 const RegisterRequestSchema = t.Object({
@@ -116,11 +116,11 @@ export const authModule = new Elysia({ prefix: "/auth" })
         );
       }
 
-      // Validate password strength
-      if (password.length < 8) {
+      // Validate password strength (min 8 chars, 1 uppercase, 1 lowercase, 1 number)
+      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) {
         throw new ApiError(
           ErrorCode.VALIDATION_ERROR,
-          "Password must be at least 8 characters long"
+          "Password must be at least 8 characters and include uppercase, lowercase, and a number"
         );
       }
 
@@ -331,11 +331,11 @@ export const authModule = new Elysia({ prefix: "/auth" })
         );
       }
 
-      // Validate password strength
-      if (password.length < 8) {
+      // Validate password strength (min 8 chars, 1 uppercase, 1 lowercase, 1 number)
+      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) {
         throw new ApiError(
           ErrorCode.VALIDATION_ERROR,
-          "Password must be at least 8 characters long"
+          "Password must be at least 8 characters and include uppercase, lowercase, and a number"
         );
       }
 

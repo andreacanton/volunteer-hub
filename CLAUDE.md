@@ -70,15 +70,19 @@ e2e/               # Playwright E2E tests (Bun + @playwright/test)
 ```
 
 ### Error Codes
-| Code               | HTTP | Description                |
-| ------------------ | ---- | -------------------------- |
-| VALIDATION_ERROR   | 400  | Invalid request data       |
-| AUTH_TOKEN_MISSING | 401  | No Authorization header    |
-| AUTH_TOKEN_INVALID | 401  | Malformed or invalid token |
-| AUTH_TOKEN_EXPIRED | 401  | Token past expiration      |
-| RESOURCE_NOT_FOUND | 404  | Entity not found           |
-| DATABASE_ERROR     | 500  | Database operation failed  |
-| INTERNAL_ERROR     | 500  | Unexpected server error    |
+| Code                     | HTTP | Description                          |
+| ------------------------ | ---- | ------------------------------------ |
+| VALIDATION_ERROR         | 400  | Invalid request data                 |
+| AUTH_TOKEN_MISSING       | 401  | No Authorization header              |
+| AUTH_TOKEN_INVALID       | 401  | Malformed or invalid token           |
+| AUTH_TOKEN_EXPIRED       | 401  | Token past expiration                |
+| AUTH_TOKEN_REVOKED       | 401  | Token has been revoked               |
+| AUTH_INVALID_CREDENTIALS | 401  | Email/password combination incorrect |
+| AUTH_USER_NOT_FOUND      | 404  | Authenticated user no longer exists  |
+| AUTH_USER_EXISTS         | 409  | Email already registered             |
+| RESOURCE_NOT_FOUND       | 404  | Entity not found                     |
+| DATABASE_ERROR           | 500  | Database operation failed            |
+| INTERNAL_ERROR           | 500  | Unexpected server error              |
 
 ### Key Dependencies
 - `elysia` - Web framework
