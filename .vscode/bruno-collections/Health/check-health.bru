@@ -1,0 +1,63 @@
+meta {
+  name: Check Health
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/health
+  body: none
+  auth: none
+}
+
+tests {
+  test("should return 200 status", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("should have standard API response format", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('success');
+    expect(body).to.have.property('data');
+    expect(body).to.have.property('error');
+    expect(body).to.have.property('timestamp');
+  });
+
+  test("should indicate success", function() {
+    const body = res.getBody();
+    expect(body.success).to.be.true;
+    expect(body.error).to.be.null;
+  });
+
+  test("should have health data with required properties", function() {
+    const body = res.getBody();
+    expect(body.data).to.be.an('object');
+    expect(body.data).to.have.property('status');
+    expect(body.data).to.have.property('version');
+    expect(body.data).to.have.property('uptime');
+    expect(body.data).to.have.property('timestamp');
+  });
+
+  test("should have status 'ok'", function() {
+    const body = res.getBody();
+    expect(body.data.status).to.equal('ok');
+  });
+
+  test("should have non-negative uptime", function() {
+    const body = res.getBody();
+    expect(body.data.uptime).to.be.a('number');
+    expect(body.data.uptime).to.be.at.least(0);
+  });
+
+  test("should have valid ISO 8601 timestamp in response", function() {
+    const body = res.getBody();
+    const timestampRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+    expect(body.timestamp).to.match(timestampRegex);
+  });
+
+  test("should have valid ISO 8601 timestamp in health data", function() {
+    const body = res.getBody();
+    const timestampRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+    expect(body.data.timestamp).to.match(timestampRegex);
+  });
+}

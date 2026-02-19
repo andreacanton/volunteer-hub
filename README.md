@@ -38,7 +38,7 @@ The application supports four types of services:
 
 ## Technology Stack
 
-- **Frontend**: Flutter (Dart) - Cross-platform mobile app (iOS & Android)
+- **Frontend**: Flutter (Dart) - web only app
 - **Backend Runtime**: Bun.js
 - **Backend Framework**: Elysia (TypeScript)
 - **Database**: SQLite
@@ -54,7 +54,7 @@ The application supports four types of services:
 git clone [repository-url]
 
 # Navigate to backend directory
-cd ronda-carita-attendance/backend
+cd volunteer-hub/webapi
 
 # Install dependencies with Bun
 bun install
@@ -77,20 +77,40 @@ bun run dev
 # Visit: https://docs.flutter.dev/get-started/install
 
 # Navigate to frontend directory
-cd ronda-carita-attendance/frontend
+cd volunteer-hub/ui
 
 # Get Flutter dependencies
 flutter pub get
 
-# Run on iOS simulator (macOS only)
-flutter run -d ios
+# Run on web (Chrome)
+flutter run -d chrome
 
-# Run on Android emulator
-flutter run -d android
-
-# Or run on connected device
-flutter run
+# Or run on web server
+flutter run -d web-server
 ```
+
+## Podman / Docker
+
+The project includes container support for local development using Podman (or Docker).
+
+```bash
+# Start the backend
+podman compose up
+
+# Start backend + Flutter web (browser testing)
+podman compose --profile web up
+
+# Rebuild after dependency changes
+podman compose build
+
+# View logs
+podman compose logs -f webapi
+
+# Reset database (removes named volumes)
+podman compose down -v
+```
+
+The backend runs at `http://localhost:3000` with hot reload via source mounts. SQLite data persists across restarts unless volumes are removed. The optional Flutter web service serves at `http://localhost:8080`.
 
 ## Usage
 
@@ -115,30 +135,37 @@ flutter run
 
 ```
 /
-├── backend/                # Bun.js + Elysia backend
+├── webapi/                # Bun.js + Elysia backend
 │   ├── src/
-│   │   ├── routes/        # API routes
-│   │   ├── controllers/   # Request handlers
-│   │   ├── models/        # Database models
-│   │   ├── middleware/    # Authentication, validation
-│   │   ├── services/      # Business logic
-│   │   └── utils/         # Helper functions
+│   │   ├── modules/       # Feature-based modules (auth, user, health, etc.)
+│   │   │   └── <module>/
+│   │   │       ├── index.ts   # Routes controller (Elysia instance)
+│   │   │       └── service.ts # Business logic (pure functions)
+│   │   ├── middleware/    # Auth guard, error handler, request logger
+│   │   ├── config/        # Environment validation, logger setup, CORS
+│   │   ├── database/      # Connection singleton, init, migrations
+│   │   ├── utils/         # Response helpers, shared utilities
+│   │   ├── types/         # Shared TypeScript types
+│   │   ├── constants/     # Enums and constants
+│   │   ├── app.ts         # Main Elysia app assembly
+│   │   └── index.ts       # Entry point
+│   ├── migrations/        # SQL migration files (001_*.sql, 002_*.sql)
+│   ├── database/          # SQLite database files (.gitignored)
 │   ├── tests/             # Backend tests
-│   ├── migrations/        # Database migrations
-│   ├── database/          # SQLite database files
 │   └── package.json
 │
-├── frontend/              # Flutter mobile app
+├── ui/                    # Flutter web-only app
 │   ├── lib/
 │   │   ├── main.dart
 │   │   ├── models/        # Data models (User, Service, Attendance)
-│   │   ├── services/      # API client and service layer
-│   │   ├── providers/     # State management (Provider/Riverpod)
+│   │   ├── services/      # API client (dio) and service layer
+│   │   ├── providers/     # State management (Riverpod)
 │   │   ├── screens/       # UI screens
 │   │   ├── widgets/       # Reusable widgets
+│   │   ├── config/        # Configuration (env, theme)
 │   │   └── utils/         # Helper functions
 │   ├── test/              # Flutter tests
-│   ├── assets/            # Images, fonts, etc.
+│   ├── web/               # Web-specific assets
 │   └── pubspec.yaml
 │
 └── docs/                  # Shared documentation

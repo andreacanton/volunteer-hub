@@ -50,16 +50,22 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  user.fullName,
-                  style: Theme.of(context).textTheme.headlineSmall,
+                Semantics(
+                  container: true,
+                  child: Text(
+                    user.fullName,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  user.email,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                Semantics(
+                  container: true,
+                  child: Text(
+                    user.email,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Chip(

@@ -7,10 +7,12 @@ Volunteer Attendance Management - a full-stack application for coordinating char
 ## Technology Stack
 
 - **Backend**: Bun.js + Elysia (TypeScript), SQLite with bun:sqlite
-- **Frontend**: Flutter (Dart) for iOS/Android
+- **Frontend**: Flutter (Dart) - Web only
 - **Auth**: JWT tokens (HS256, 24h expiration)
 - **API**: RESTful with `/api/v1/` prefix
 - **Logging**: LogTape (@logtape/logtape)
+- **E2E**: bun + playwright e2e
+- **API testing**: bruno .vscode/bruno-collections
 
 ## Project Structure
 
@@ -33,7 +35,7 @@ webapi/            # Bun.js + Elysia API
   database/        # SQLite database files (.gitignored)
   tests/
 
-ui/                # Flutter mobile app
+ui/                # Flutter web app
   lib/
     models/        # Data models
     services/      # API client (dio)
@@ -41,6 +43,10 @@ ui/                # Flutter mobile app
     screens/       # UI screens
     widgets/       # Reusable widgets
   tests/
+
+e2e/               # Playwright E2E tests (Bun + @playwright/test)
+  tests/           # Test specs
+  playwright.config.ts
 ```
 
 ## Backend Architecture Patterns
@@ -64,15 +70,19 @@ ui/                # Flutter mobile app
 ```
 
 ### Error Codes
-| Code | HTTP | Description |
-|------|------|-------------|
-| VALIDATION_ERROR | 400 | Invalid request data |
-| AUTH_TOKEN_MISSING | 401 | No Authorization header |
-| AUTH_TOKEN_INVALID | 401 | Malformed or invalid token |
-| AUTH_TOKEN_EXPIRED | 401 | Token past expiration |
-| RESOURCE_NOT_FOUND | 404 | Entity not found |
-| DATABASE_ERROR | 500 | Database operation failed |
-| INTERNAL_ERROR | 500 | Unexpected server error |
+| Code                     | HTTP | Description                          |
+| ------------------------ | ---- | ------------------------------------ |
+| VALIDATION_ERROR         | 400  | Invalid request data                 |
+| AUTH_TOKEN_MISSING       | 401  | No Authorization header              |
+| AUTH_TOKEN_INVALID       | 401  | Malformed or invalid token           |
+| AUTH_TOKEN_EXPIRED       | 401  | Token past expiration                |
+| AUTH_TOKEN_REVOKED       | 401  | Token has been revoked               |
+| AUTH_INVALID_CREDENTIALS | 401  | Email/password combination incorrect |
+| AUTH_USER_NOT_FOUND      | 404  | Authenticated user no longer exists  |
+| AUTH_USER_EXISTS         | 409  | Email already registered             |
+| RESOURCE_NOT_FOUND       | 404  | Entity not found                     |
+| DATABASE_ERROR           | 500  | Database operation failed            |
+| INTERNAL_ERROR           | 500  | Unexpected server error              |
 
 ### Key Dependencies
 - `elysia` - Web framework
@@ -100,6 +110,19 @@ LOG_LEVEL=info  # trace|debug|info|warning|error|fatal
 
 ## Common Commands
 
+### Root (from project root)
+```bash
+bun run test:webapi  # Run backend tests
+bun run test:ui      # Run Flutter tests
+bun run test:e2e     # Run Playwright E2E tests
+bun run test         # Run all tests (webapi + ui + e2e)
+bun run test:bruno        # Run all Bruno API tests
+bun run test:bruno:health # Run Bruno health tests
+bun run test:bruno:auth   # Run Bruno auth tests
+bun run test:bruno:user   # Run Bruno user tests
+bun run seed:test         # Seed test users for Bruno tests
+```
+
 ### Backend (webapi/)
 ```bash
 cd webapi
@@ -112,15 +135,28 @@ bun test             # Run tests
 bun run lint         # Run ESLint
 ```
 
+**Note**: `bun run dev` uses hot reload - no need to restart the server after code changes. Just edit and test directly.
+
 ### Frontend (ui/)
 ```bash
 cd ui
 flutter pub get      # Get dependencies
-flutter run          # Run on connected device
-flutter run -d ios   # Run on iOS simulator
-flutter run -d android  # Run on Android emulator
+flutter run -d chrome  # Run in Chrome browser
 flutter test         # Run tests
 ```
+
+### E2E Tests (e2e/)
+```bash
+cd e2e
+bun install                        # Install dependencies
+bunx playwright install --with-deps chromium  # Install browsers
+bunx playwright test               # Run all tests (all browsers)
+bunx playwright test --project=chromium  # Run chromium only
+bun run test:ui                    # Interactive UI mode
+bun run report                     # View last HTML report
+```
+
+**Note**: The Playwright config includes `webServer` entries that auto-start the backend (port 3000) and Flutter frontend (port 8080) if they aren't already running. During local dev, existing servers are reused.
 
 ## Data Model
 

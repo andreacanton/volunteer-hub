@@ -1,0 +1,91 @@
+meta {
+  name: Refresh Success
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{base_url}}/auth/refresh
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refreshToken": "{{refresh_token}}"
+  }
+}
+
+script:post-response {
+  // Capture new tokens for subsequent tests
+  if (res.getStatus() === 200) {
+    const body = res.getBody();
+    bru.setVar("auth_token", body.data.accessToken);
+    bru.setVar("new_refresh_token", body.data.refreshToken);
+  }
+}
+
+tests {
+  test("should return 200 status", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("should have standard API response format", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('success');
+    expect(body).to.have.property('data');
+    expect(body).to.have.property('error');
+    expect(body).to.have.property('timestamp');
+  });
+
+  test("should indicate success", function() {
+    const body = res.getBody();
+    expect(body.success).to.be.true;
+    expect(body.error).to.be.null;
+  });
+
+  test("should return new access token", function() {
+    const body = res.getBody();
+    expect(body.data).to.have.property('accessToken');
+    expect(body.data.accessToken).to.be.a('string');
+    expect(body.data.accessToken).to.have.lengthOf.at.least(1);
+  });
+
+  test("should return new refresh token", function() {
+    const body = res.getBody();
+    expect(body.data).to.have.property('refreshToken');
+    expect(body.data.refreshToken).to.be.a('string');
+    expect(body.data.refreshToken).to.have.lengthOf.at.least(1);
+  });
+
+  test("new refresh token should be different from old one", function() {
+    const body = res.getBody();
+    const oldToken = bru.getVar("refresh_token");
+    expect(body.data.refreshToken).to.not.equal(oldToken);
+  });
+
+  test("should return user data", function() {
+    const body = res.getBody();
+    expect(body.data).to.have.property('user');
+    expect(body.data.user).to.be.an('object');
+  });
+
+  test("should have user id, email, and role", function() {
+    const body = res.getBody();
+    const user = body.data.user;
+    expect(user).to.have.property('id');
+    expect(user).to.have.property('email');
+    expect(user).to.have.property('role');
+    expect(user.email).to.equal('test-user@example.com');
+  });
+}
+
+docs {
+  # Refresh Success Test
+
+  This test verifies successful token refresh with a valid refresh token.
+  Token rotation is validated - the new refresh token should be different.
+
+  **Prerequisites:**
+  - Run login-success.bru first to capture a valid refresh token
+}

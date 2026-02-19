@@ -1,0 +1,55 @@
+meta {
+  name: Refresh Invalid Token
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{base_url}}/auth/refresh
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refreshToken": "invalid-token-that-does-not-exist"
+  }
+}
+
+tests {
+  test("should return 401 Unauthorized status", function() {
+    expect(res.getStatus()).to.equal(401);
+  });
+
+  test("should have standard API response format", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('success');
+    expect(body).to.have.property('data');
+    expect(body).to.have.property('error');
+    expect(body).to.have.property('timestamp');
+  });
+
+  test("should indicate failure", function() {
+    const body = res.getBody();
+    expect(body.success).to.be.false;
+    expect(body.data).to.be.null;
+  });
+
+  test("should have AUTH_TOKEN_INVALID error code", function() {
+    const body = res.getBody();
+    expect(body.error).to.have.property('code');
+    expect(body.error.code).to.equal('AUTH_TOKEN_INVALID');
+  });
+
+  test("should have error message", function() {
+    const body = res.getBody();
+    expect(body.error).to.have.property('message');
+    expect(body.error.message).to.include('Invalid');
+  });
+}
+
+docs {
+  # Refresh Invalid Token Test
+
+  This test verifies that invalid/malformed refresh tokens are rejected.
+}
