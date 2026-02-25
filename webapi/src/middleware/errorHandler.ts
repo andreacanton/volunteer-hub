@@ -46,6 +46,18 @@ export const errorHandler = new Elysia({ name: "errorHandler" }).onError(
       return error(err.code, err.message, err.details);
     }
 
+    // Handle SQLite unique constraint violations as 409 Conflict
+    if (
+      err instanceof Error &&
+      err.message.includes("UNIQUE constraint failed")
+    ) {
+      logger.debug("Unique constraint violation: {message}", {
+        message: err.message,
+      });
+      set.status = 409;
+      return error(ErrorCode.AUTH_USER_EXISTS, "A resource with this identifier already exists");
+    }
+
     // Handle unexpected errors
     logger.error(
       "Unexpected error [elysia_code={code}] [type={type}] [message={message}] [stack={stack}]",
