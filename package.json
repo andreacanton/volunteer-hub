@@ -12,6 +12,7 @@
     "test:bruno:health": "cd .vscode/bruno-collections && bru run Health --env local",
     "test:bruno:auth": "cd .vscode/bruno-collections && bru run Auth --env local",
     "test:bruno:user": "cd .vscode/bruno-collections && bru run User --env local",
+    "test:bruno:admin": "cd .vscode/bruno-collections && bru run Admin --env local",
     "seed:test": "bun run .vscode/bruno-collections/seed-test-users.ts"
   },
   "devDependencies": {

@@ -74,6 +74,7 @@ abstract class ApiErrorCode {
   static const authTokenMissing = 'AUTH_TOKEN_MISSING';
   static const authTokenInvalid = 'AUTH_TOKEN_INVALID';
   static const authTokenExpired = 'AUTH_TOKEN_EXPIRED';
+  static const forbidden = 'FORBIDDEN';
   static const resourceNotFound = 'RESOURCE_NOT_FOUND';
   static const databaseError = 'DATABASE_ERROR';
   static const internalError = 'INTERNAL_ERROR';
@@ -98,6 +99,8 @@ class ApiException implements Exception {
       case ApiErrorCode.authTokenInvalid:
       case ApiErrorCode.authTokenExpired:
         return 'Please log in again.';
+      case ApiErrorCode.forbidden:
+        return 'You do not have permission to perform this action.';
       case ApiErrorCode.resourceNotFound:
         return 'The requested item was not found.';
       case ApiErrorCode.databaseError:

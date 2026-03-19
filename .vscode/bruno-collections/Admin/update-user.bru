@@ -1,0 +1,53 @@
+meta {
+  name: Update User
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{base_url}}/users/{{target_user_id}}
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{admin_token}}
+}
+
+body:json {
+  {
+    "firstName": "UpdatedFirst",
+    "lastName": "UpdatedLast"
+  }
+}
+
+script:pre-request {
+  const token = bru.getVar("admin_token");
+  if (token) {
+    req.setHeader("Authorization", "Bearer " + token);
+  }
+}
+
+tests {
+  test("should return 200 or 401", function() {
+    expect(res.getStatus()).to.be.oneOf([200, 401]);
+  });
+
+  test("should return updated user when authenticated", function() {
+    if (res.getStatus() === 200) {
+      const body = res.getBody();
+      expect(body.success).to.be.true;
+      expect(body.data.firstName).to.equal('UpdatedFirst');
+      expect(body.data.lastName).to.equal('UpdatedLast');
+    }
+  });
+}
+
+docs {
+  # Update User (Admin)
+
+  Tests updating a user's name via the admin endpoint.
+
+  **Prerequisites:**
+  - Run login-admin.bru and list-users.bru first to capture target_user_id
+}

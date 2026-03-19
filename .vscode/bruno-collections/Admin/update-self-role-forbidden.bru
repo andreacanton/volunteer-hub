@@ -1,0 +1,52 @@
+meta {
+  name: Update Self Role Forbidden
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{base_url}}/users/{{admin_user_id}}
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{admin_token}}
+}
+
+body:json {
+  {
+    "role": "VOLUNTEER"
+  }
+}
+
+script:pre-request {
+  const token = bru.getVar("admin_token");
+  if (token) {
+    req.setHeader("Authorization", "Bearer " + token);
+  }
+}
+
+tests {
+  test("should return 403 or 401", function() {
+    expect(res.getStatus()).to.be.oneOf([403, 401]);
+  });
+
+  test("should have FORBIDDEN error when authenticated", function() {
+    if (res.getStatus() === 403) {
+      const body = res.getBody();
+      expect(body.success).to.be.false;
+      expect(body.error.code).to.equal('FORBIDDEN');
+      expect(body.error.message).to.include('own role');
+    }
+  });
+}
+
+docs {
+  # Update Self Role Forbidden
+
+  Verifies that an admin cannot change their own role.
+
+  **Prerequisites:**
+  - Run login-admin.bru first
+}

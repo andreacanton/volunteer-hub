@@ -10,7 +10,14 @@ enum UserRole {
   static UserRole fromString(String value) {
     return UserRole.values.firstWhere(
       (role) => role.value == value,
-      orElse: () => UserRole.volunteer,
+      orElse: () {
+        assert(() {
+          // ignore: avoid_print
+          print('Warning: Unknown UserRole "$value", falling back to volunteer');
+          return true;
+        }());
+        return UserRole.volunteer;
+      },
     );
   }
 }
