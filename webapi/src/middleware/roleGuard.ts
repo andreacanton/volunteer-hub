@@ -17,7 +17,13 @@ const logger = getLogger(["app", "auth"]);
 export function roleGuard(...allowedRoles: UserRole[]) {
   const validRoles = Object.values(UserRole);
   return new Elysia({ name: `roleGuard:${allowedRoles.join(",")}` })
-    .onBeforeHandle(({ user, set }) => {
+    .onBeforeHandle(({ user, authError, set }) => {
+      // Re-check auth since authGuard's onBeforeHandle may not propagate
+      // across .use() plugin boundaries in Elysia
+      if (authError) {
+        return authError;
+      }
+
       const userRole = user?.role as string | undefined;
       if (!user || !userRole || !validRoles.includes(userRole as UserRole) || !allowedRoles.includes(userRole as UserRole)) {
         logger.debug("Access denied: user role {role} not in {allowed}", {
