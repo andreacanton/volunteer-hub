@@ -1,0 +1,89 @@
+meta {
+  name: List Users
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/users
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{admin_token}}
+}
+
+script:pre-request {
+  const token = bru.getVar("admin_token");
+  if (token) {
+    req.setHeader("Authorization", "Bearer " + token);
+  }
+}
+
+tests {
+  test("should return 200 or 401 (auth required)", function() {
+    expect(res.getStatus()).to.be.oneOf([200, 401]);
+  });
+
+  test("should have standard API response format", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('success');
+    expect(body).to.have.property('data');
+    expect(body).to.have.property('error');
+    expect(body).to.have.property('timestamp');
+  });
+
+  test("should return array of users when authenticated", function() {
+    if (res.getStatus() === 200) {
+      const body = res.getBody();
+      expect(body.success).to.be.true;
+      expect(body.data).to.be.an('array');
+      expect(body.data.length).to.be.at.least(1);
+    }
+  });
+
+  test("each user should have expected fields", function() {
+    if (res.getStatus() === 200) {
+      const body = res.getBody();
+      const user = body.data[0];
+      expect(user).to.have.property('id');
+      expect(user).to.have.property('email');
+      expect(user).to.have.property('role');
+      expect(user).to.have.property('firstName');
+      expect(user).to.have.property('lastName');
+      expect(user).to.have.property('createdAt');
+      expect(user).to.have.property('updatedAt');
+    }
+  });
+
+  test("should not expose password hash", function() {
+    if (res.getStatus() === 200) {
+      const body = res.getBody();
+      const user = body.data[0];
+      expect(user).to.not.have.property('password_hash');
+      expect(user).to.not.have.property('passwordHash');
+    }
+  });
+
+  test("should capture a non-admin user ID for later tests", function() {
+    if (res.getStatus() === 200) {
+      const body = res.getBody();
+      const adminId = bru.getVar("admin_user_id");
+      const otherUser = body.data.find(u => u.id !== adminId);
+      if (otherUser) {
+        bru.setVar("target_user_id", otherUser.id);
+        bru.setVar("target_user_email", otherUser.email);
+      }
+    }
+  });
+}
+
+docs {
+  # List Users (Admin)
+
+  Tests the admin GET /users endpoint that returns all users.
+
+  **Prerequisites:**
+  - Run login-admin.bru first to capture an admin_token
+}

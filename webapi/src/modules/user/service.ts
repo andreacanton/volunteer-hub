@@ -1,5 +1,5 @@
 import { getDb } from "../../database/connection.ts";
-import { UserRole } from "../../constants/userRole.ts";
+import type { UserRole } from "../../constants/userRole.ts";
 import { toUserResponse, type UserResponse } from "../auth/service.ts";
 
 /**
@@ -29,6 +29,19 @@ export interface UpdateUserParams {
 }
 
 /**
+ * Parameters for admin user update.
+ */
+export interface UpdateUserAdminParams {
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  role?: UserRole;
+}
+
+/** Columns safe to select (excludes password_hash). */
+const SAFE_COLUMNS = "id, email, role, first_name, last_name, created_at, updated_at";
+
+/**
  * Retrieves a user by ID.
  * @param id - User ID
  * @returns User or null if not found
@@ -45,11 +58,12 @@ export function getUserById(id: string): User | null {
  * @returns Safe user or null if not found
  */
 export function getSafeUserById(id: string): SafeUser | null {
-  const user = getUserById(id);
+  const db = getDb();
+  const stmt = db.prepare(`SELECT ${SAFE_COLUMNS} FROM users WHERE id = ?`);
+  const user = stmt.get(id) as Omit<User, "password_hash"> | null;
   if (!user) {
     return null;
   }
-
   return toUserResponse(user);
 }
 
@@ -69,32 +83,29 @@ export function isEmailTaken(email: string, excludeUserId?: string): boolean {
 }
 
 /**
- * Updates a user's profile.
+ * Builds and executes a dynamic UPDATE query for users.
  * @param id - User ID
- * @param params - Fields to update
+ * @param fields - Map of column names to values
  * @returns Updated safe user or null if not found
  */
-export function updateUser(id: string, params: UpdateUserParams): SafeUser | null {
+function applyUserUpdate(id: string, fields: Record<string, string | undefined>): SafeUser | null {
   const db = getDb();
 
-  // Build dynamic update query
   const updates: string[] = [];
-  const values: (string | null)[] = [];
+  const values: string[] = [];
 
-  if (params.email !== undefined) {
-    updates.push("email = ?");
-    values.push(params.email);
+  for (const [column, value] of Object.entries(fields)) {
+    if (value !== undefined) {
+      updates.push(`${column} = ?`);
+      values.push(value);
+    }
   }
 
   if (updates.length === 0) {
-    // No fields to update, just return current user
     return getSafeUserById(id);
   }
 
-  // Always update updated_at
   updates.push("updated_at = datetime('now')");
-
-  // Add user ID for WHERE clause
   values.push(id);
 
   const stmt = db.prepare(`
@@ -106,4 +117,54 @@ export function updateUser(id: string, params: UpdateUserParams): SafeUser | nul
   stmt.run(...values);
 
   return getSafeUserById(id);
+}
+
+/**
+ * Updates a user's profile.
+ * @param id - User ID
+ * @param params - Fields to update
+ * @returns Updated safe user or null if not found
+ */
+export function updateUser(id: string, params: UpdateUserParams): SafeUser | null {
+  return applyUserUpdate(id, {
+    email: params.email,
+  });
+}
+
+/**
+ * Retrieves all users without sensitive fields.
+ * @returns Array of safe users
+ */
+export function getAllUsers(): SafeUser[] {
+  const db = getDb();
+  const stmt = db.prepare(`SELECT ${SAFE_COLUMNS} FROM users ORDER BY created_at DESC`);
+  const users = stmt.all() as Omit<User, "password_hash">[];
+  return users.map(toUserResponse);
+}
+
+/**
+ * Updates a user as admin (can change role, name, email).
+ * @param id - User ID
+ * @param params - Fields to update
+ * @returns Updated safe user or null if not found
+ */
+export function updateUserAdmin(id: string, params: UpdateUserAdminParams): SafeUser | null {
+  return applyUserUpdate(id, {
+    email: params.email,
+    first_name: params.firstName,
+    last_name: params.lastName,
+    role: params.role,
+  });
+}
+
+/**
+ * Deletes a user. Related records (refresh_tokens, password_resets) are
+ * removed automatically via ON DELETE CASCADE foreign keys.
+ * @param id - User ID
+ * @returns true if user was deleted
+ */
+export function deleteUser(id: string): boolean {
+  const db = getDb();
+  const result = db.prepare("DELETE FROM users WHERE id = ?").run(id);
+  return result.changes > 0;
 }

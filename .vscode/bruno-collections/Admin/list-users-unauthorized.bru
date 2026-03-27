@@ -1,0 +1,29 @@
+meta {
+  name: List Users Unauthorized
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}/users
+  body: none
+  auth: none
+}
+
+tests {
+  test("should return 401 without token", function() {
+    expect(res.getStatus()).to.equal(401);
+  });
+
+  test("should indicate failure", function() {
+    const body = res.getBody();
+    expect(body.success).to.be.false;
+    expect(body.data).to.be.null;
+  });
+}
+
+docs {
+  # List Users Unauthorized
+
+  Verifies that the admin endpoint rejects unauthenticated requests.
+}

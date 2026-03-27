@@ -1,0 +1,52 @@
+meta {
+  name: List Users Forbidden
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{base_url}}/users
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{auth_token}}
+}
+
+script:pre-request {
+  // Uses the non-admin auth_token from Auth/login-success
+  const token = bru.getVar("auth_token");
+  if (token) {
+    req.setHeader("Authorization", "Bearer " + token);
+  }
+}
+
+tests {
+  test("should return 403 or 401 for non-admin user", function() {
+    // 403 if token is valid but non-admin, 401 if token not available
+    expect(res.getStatus()).to.be.oneOf([403, 401]);
+  });
+
+  test("should indicate failure", function() {
+    const body = res.getBody();
+    expect(body.success).to.be.false;
+    expect(body.data).to.be.null;
+  });
+
+  test("should have FORBIDDEN error code when authenticated", function() {
+    if (res.getStatus() === 403) {
+      const body = res.getBody();
+      expect(body.error.code).to.equal('FORBIDDEN');
+    }
+  });
+}
+
+docs {
+  # List Users Forbidden
+
+  Verifies that non-admin authenticated users get 403 Forbidden.
+
+  **Prerequisites:**
+  - Run Auth/login-success.bru first to capture a non-admin auth_token
+}

@@ -1,0 +1,46 @@
+meta {
+  name: Delete Self Forbidden
+  type: http
+  seq: 9
+}
+
+delete {
+  url: {{base_url}}/users/{{admin_user_id}}
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{admin_token}}
+}
+
+script:pre-request {
+  const token = bru.getVar("admin_token");
+  if (token) {
+    req.setHeader("Authorization", "Bearer " + token);
+  }
+}
+
+tests {
+  test("should return 403 or 401", function() {
+    expect(res.getStatus()).to.be.oneOf([403, 401]);
+  });
+
+  test("should have FORBIDDEN error when authenticated", function() {
+    if (res.getStatus() === 403) {
+      const body = res.getBody();
+      expect(body.success).to.be.false;
+      expect(body.error.code).to.equal('FORBIDDEN');
+      expect(body.error.message).to.include('own account');
+    }
+  });
+}
+
+docs {
+  # Delete Self Forbidden
+
+  Verifies that an admin cannot delete their own account.
+
+  **Prerequisites:**
+  - Run login-admin.bru first
+}

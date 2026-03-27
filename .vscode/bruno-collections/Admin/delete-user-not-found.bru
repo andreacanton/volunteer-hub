@@ -1,0 +1,45 @@
+meta {
+  name: Delete User Not Found
+  type: http
+  seq: 10
+}
+
+delete {
+  url: {{base_url}}/users/nonexistent-id-12345
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{admin_token}}
+}
+
+script:pre-request {
+  const token = bru.getVar("admin_token");
+  if (token) {
+    req.setHeader("Authorization", "Bearer " + token);
+  }
+}
+
+tests {
+  test("should return 404 or 401", function() {
+    expect(res.getStatus()).to.be.oneOf([404, 401]);
+  });
+
+  test("should have RESOURCE_NOT_FOUND error when authenticated", function() {
+    if (res.getStatus() === 404) {
+      const body = res.getBody();
+      expect(body.success).to.be.false;
+      expect(body.error.code).to.equal('RESOURCE_NOT_FOUND');
+    }
+  });
+}
+
+docs {
+  # Delete User Not Found
+
+  Verifies that deleting a nonexistent user returns 404.
+
+  **Prerequisites:**
+  - Run login-admin.bru first
+}

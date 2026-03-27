@@ -12,7 +12,8 @@
     "test:bruno:health": "cd .vscode/bruno-collections && bru run Health --env local",
     "test:bruno:auth": "cd .vscode/bruno-collections && bru run Auth --env local",
     "test:bruno:user": "cd .vscode/bruno-collections && bru run User --env local",
-    "seed:test": "bun run .vscode/bruno-collections/seed-test-users.ts"
+    "test:bruno:admin": "cd .vscode/bruno-collections && bru run Admin --env local",
+    "seed:test": "cd webapi && bun run --env-file .env ../.vscode/bruno-collections/seed-test-users.ts"
   },
   "devDependencies": {
     "@usebruno/cli": "^3.0.3"

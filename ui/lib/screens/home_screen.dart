@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/user.dart';
 import '../providers/auth_provider.dart';
+import '../widgets/role_chip.dart';
+import 'users_screen.dart';
 
 /// Home screen showing logged-in user info.
 class HomeScreen extends ConsumerWidget {
@@ -16,6 +18,14 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Volunteer Hub'),
         actions: [
+          if (user?.role == UserRole.admin)
+            IconButton(
+              icon: const Icon(Icons.people),
+              tooltip: 'Manage Users',
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const UsersScreen()),
+              ),
+            ),
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Sign out',
@@ -68,13 +78,7 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                Chip(
-                  avatar: Icon(
-                    _getRoleIcon(user.role),
-                    size: 18,
-                  ),
-                  label: Text(_getRoleLabel(user.role)),
-                ),
+                RoleChip(role: user.role),
               ],
             ),
           ),
@@ -87,28 +91,6 @@ class HomeScreen extends ConsumerWidget {
     final first = user.firstName.isNotEmpty ? user.firstName[0] : '';
     final last = user.lastName.isNotEmpty ? user.lastName[0] : '';
     return '$first$last'.toUpperCase();
-  }
-
-  IconData _getRoleIcon(UserRole role) {
-    switch (role) {
-      case UserRole.admin:
-        return Icons.admin_panel_settings;
-      case UserRole.coordinator:
-        return Icons.supervisor_account;
-      case UserRole.volunteer:
-        return Icons.person;
-    }
-  }
-
-  String _getRoleLabel(UserRole role) {
-    switch (role) {
-      case UserRole.admin:
-        return 'Administrator';
-      case UserRole.coordinator:
-        return 'Coordinator';
-      case UserRole.volunteer:
-        return 'Volunteer';
-    }
   }
 
   void _showLogoutDialog(BuildContext context, WidgetRef ref) {

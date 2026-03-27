@@ -14,6 +14,7 @@
  */
 
 import { createUser, getUserByEmail } from "../../webapi/src/modules/auth/service.ts";
+import { UserRole } from "../../webapi/src/constants/userRole.ts";
 import { closeDb } from "../../webapi/src/database/connection.ts";
 import { getLogger } from "@logtape/logtape";
 
@@ -30,6 +31,12 @@ const TEST_USERS = [
     email: "duplicate-test@example.com",
     password: "TestPassword123!",
     description: "Used for duplicate registration error tests",
+  },
+  {
+    email: "admin-test@example.com",
+    password: "TestPassword123!",
+    role: UserRole.ADMIN,
+    description: "Used for admin API tests",
   },
 ];
 
@@ -55,6 +62,7 @@ async function seedTestUsers() {
       await createUser({
         email: testUser.email,
         password: testUser.password,
+        ...(testUser.role && { role: testUser.role }),
       });
 
       logger.info(`Created ${testUser.email} - ${testUser.description}`);

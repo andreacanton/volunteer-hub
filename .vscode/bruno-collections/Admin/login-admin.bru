@@ -1,0 +1,47 @@
+meta {
+  name: Login Admin
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "admin-test@example.com",
+    "password": "{{test_password}}"
+  }
+}
+
+script:post-response {
+  if (res.getStatus() === 200) {
+    const body = res.getBody();
+    bru.setVar("admin_token", body.data.accessToken);
+    bru.setVar("admin_user_id", body.data.user.id);
+  }
+}
+
+tests {
+  test("should return 200 status", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("should be an admin user", function() {
+    const body = res.getBody();
+    expect(body.data.user.role).to.equal('ADMIN');
+  });
+}
+
+docs {
+  # Login Admin
+
+  Logs in as the admin test user. Captures the admin token and user ID
+  for subsequent admin API tests.
+
+  **Prerequisites:**
+  - Run `bun run seed:test` to create the admin-test@example.com user
+}

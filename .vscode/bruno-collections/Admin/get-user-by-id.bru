@@ -1,0 +1,47 @@
+meta {
+  name: Get User By ID
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{base_url}}/users/{{target_user_id}}
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{admin_token}}
+}
+
+script:pre-request {
+  const token = bru.getVar("admin_token");
+  if (token) {
+    req.setHeader("Authorization", "Bearer " + token);
+  }
+}
+
+tests {
+  test("should return 200 or 401", function() {
+    expect(res.getStatus()).to.be.oneOf([200, 401]);
+  });
+
+  test("should return user data when authenticated", function() {
+    if (res.getStatus() === 200) {
+      const body = res.getBody();
+      expect(body.success).to.be.true;
+      expect(body.data).to.have.property('id');
+      expect(body.data).to.have.property('email');
+      expect(body.data).to.have.property('role');
+    }
+  });
+}
+
+docs {
+  # Get User By ID (Admin)
+
+  Tests retrieving a specific user by ID.
+
+  **Prerequisites:**
+  - Run login-admin.bru and list-users.bru first
+}
