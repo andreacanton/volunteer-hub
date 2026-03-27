@@ -158,19 +158,13 @@ export function updateUserAdmin(id: string, params: UpdateUserAdminParams): Safe
 }
 
 /**
- * Deletes a user and cleans up related records atomically.
+ * Deletes a user. Related records (refresh_tokens, password_resets) are
+ * removed automatically via ON DELETE CASCADE foreign keys.
  * @param id - User ID
  * @returns true if user was deleted
  */
 export function deleteUser(id: string): boolean {
   const db = getDb();
-
-  const deleteInTransaction = db.transaction(() => {
-    db.prepare("DELETE FROM refresh_tokens WHERE user_id = ?").run(id);
-    db.prepare("DELETE FROM password_resets WHERE user_id = ?").run(id);
-    const result = db.prepare("DELETE FROM users WHERE id = ?").run(id);
-    return result.changes > 0;
-  });
-
-  return deleteInTransaction();
+  const result = db.prepare("DELETE FROM users WHERE id = ?").run(id);
+  return result.changes > 0;
 }

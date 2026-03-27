@@ -133,6 +133,10 @@ export const userModule = new Elysia({ prefix: "/users" })
   .get(
     "/:id",
     ({ params }) => {
+      // Avoid shadowing /me — "me" is not a valid user ID
+      if (params.id === "me") {
+        throw new ApiError(ErrorCode.RESOURCE_NOT_FOUND, "User not found");
+      }
       const userProfile = getSafeUserById(params.id);
       if (!userProfile) {
         throw new ApiError(ErrorCode.RESOURCE_NOT_FOUND, "User not found");

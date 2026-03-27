@@ -80,6 +80,7 @@ e2e/               # Playwright E2E tests (Bun + @playwright/test)
 | AUTH_INVALID_CREDENTIALS | 401  | Email/password combination incorrect |
 | AUTH_USER_NOT_FOUND      | 404  | Authenticated user no longer exists  |
 | AUTH_USER_EXISTS         | 409  | Email already registered             |
+| FORBIDDEN                | 403  | Insufficient permissions             |
 | RESOURCE_NOT_FOUND       | 404  | Entity not found                     |
 | DATABASE_ERROR           | 500  | Database operation failed            |
 | INTERNAL_ERROR           | 500  | Unexpected server error              |
