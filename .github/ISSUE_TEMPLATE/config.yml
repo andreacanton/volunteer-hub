@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question / Discussion
+    url: https://github.com/andreacanton/volunteer-hub/issues
+    about: For questions, open an issue with the "question" label
