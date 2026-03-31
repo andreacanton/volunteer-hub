@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+> For contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Project Overview
 
 Volunteer Attendance Management - a full-stack application for coordinating charity volunteer services. Volunteers subscribe to service shifts (Evening, Breakfast, Cooks, Logistics) on specific days, set attendance status, and coordinators manage staffing levels.
