@@ -7,6 +7,7 @@ import { jwtPlugin } from "./middleware/jwt.ts";
 import { healthModule } from "./modules/health/index.ts";
 import { authModule } from "./modules/auth/index.ts";
 import { userModule } from "./modules/user/index.ts";
+import { serviceModule } from "./modules/service/index.ts";
 
 /**
  * Main Elysia application instance.
@@ -37,6 +38,9 @@ export function createApp() {
 
         // User endpoints (protected, auth required)
         .use(userModule)
+
+        // Service endpoints (list/get: auth required, CRUD: admin only)
+        .use(serviceModule)
     );
 
   return app;
