@@ -236,7 +236,7 @@ Elysia was chosen as the backend framework because:
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details on the development workflow, code style, testing, and how to submit pull requests.
 
 ## License
 
