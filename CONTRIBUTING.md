@@ -1,6 +1,6 @@
 # Contributing to Volunteer Hub
 
-Thank you for your interest in contributing to Volunteer Hub! This guide will help you get started.
+Thank you for your interest in contributing to Volunteer Hub! This is the main source of truth for contribution guidelines. The `CLAUDE.md` file references this document and contains additional technical details for AI-assisted development.
 
 ## Getting Started
 
