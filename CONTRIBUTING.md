@@ -37,12 +37,22 @@ Thank you for your interest in contributing to Volunteer Hub! This is the main s
    flutter run -d chrome
    ```
 
-## Development Workflow
+## Filing Issues
 
-1. Create a branch from `main` with a descriptive name (e.g., `add-attendance-tracking`, `fix-login-redirect`)
-2. Make your changes
-3. Run tests and linting before committing
-4. Open a pull request against `main`
+Use the [issue templates](https://github.com/andreacanton/volunteer-hub/issues/new/choose) when creating a new issue:
+
+- **Bug Report** — describe the bug, steps to reproduce, expected vs actual behavior, and your environment.
+- **Feature Request** — explain the problem, your proposed solution, and alternatives you considered.
+
+Fill in every section of the template. The more detail you provide, the easier it is for someone to pick up the issue.
+
+## Resolving an Issue
+
+1. **Pick an issue** — find an open issue you want to work on and assign yourself (or leave a comment so others know you're on it).
+2. **Create a branch** from `main` with a short, descriptive name (e.g., `add-attendance-tracking`, `fix-login-redirect`). Do **not** use folder-like prefixes such as `feat/`, `fix/`, `doc/`, `chore/`, etc. — just a plain kebab-case name.
+3. **Implement your changes** — follow the code style and architecture patterns described below and in [CLAUDE.md](CLAUDE.md).
+4. **Run tests and linting** before committing (see [Testing](#testing)).
+5. **Open a pull request** against `main` — the PR template will guide you through the checklist. Link the issue using `Closes #123` in the "Related issues" section so it is automatically closed when the PR merges.
 
 ## Project Structure
 
@@ -110,6 +120,7 @@ bun run test:bruno    # Bruno API tests
 
 ## Pull Requests
 
+- Keep PR as small as possible
 - Fill out the PR template completely
 - Link related issues (e.g., `Closes #123`)
 - Ensure all tests pass and linting is clean
