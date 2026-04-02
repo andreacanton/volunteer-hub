@@ -89,13 +89,14 @@ export function isEmailTaken(email: string, excludeUserId?: string): boolean {
  * @returns Updated safe user or null if not found
  */
 function applyUserUpdate(id: string, fields: Record<string, string | undefined>): SafeUser | null {
+  const ALLOWED_COLUMNS = new Set(["first_name", "last_name", "email", "role"]);
   const db = getDb();
 
   const updates: string[] = [];
   const values: string[] = [];
 
   for (const [column, value] of Object.entries(fields)) {
-    if (value !== undefined) {
+    if (value !== undefined && ALLOWED_COLUMNS.has(column)) {
       updates.push(`${column} = ?`);
       values.push(value);
     }
