@@ -11,8 +11,8 @@ export function getCorsConfig(): CORSConfig {
 
   return {
     origin: isDevelopment
-      ? true // Allow all origins in development
-      : /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/, // Restrict in production
+      ? [/^https?:\/\/localhost(:\d+)?$/, /^https?:\/\/127\.0\.0\.1(:\d+)?$/]
+      : /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/,
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],

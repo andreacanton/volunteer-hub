@@ -17,6 +17,7 @@ import {
   updateUserPassword,
 } from "./service.ts";
 import { UserRole } from "../../constants/userRole.ts";
+import { PASSWORD_REGEX, PASSWORD_REQUIREMENTS_MESSAGE } from "../../constants/password.ts";
 import type { JwtPayload } from "../../middleware/jwt.ts";
 import { sendPasswordResetEmail } from "../../utils/email.ts";
 
@@ -117,10 +118,10 @@ export const authModule = new Elysia({ prefix: "/auth" })
       }
 
       // Validate password strength (min 8 chars, 1 uppercase, 1 lowercase, 1 number)
-      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) {
+      if (!PASSWORD_REGEX.test(password)) {
         throw new ApiError(
           ErrorCode.VALIDATION_ERROR,
-          "Password must be at least 8 characters and include uppercase, lowercase, and a number"
+          PASSWORD_REQUIREMENTS_MESSAGE
         );
       }
 
@@ -288,7 +289,8 @@ export const authModule = new Elysia({ prefix: "/auth" })
       // Check if user exists
       const user = getUserByEmail(email);
       if (!user) {
-        // Return success anyway to prevent email enumeration
+        // Normalize response time to prevent timing-based email enumeration
+        await Bun.sleep(150);
         return success({
           message: responseMessage,
         });
@@ -332,10 +334,10 @@ export const authModule = new Elysia({ prefix: "/auth" })
       }
 
       // Validate password strength (min 8 chars, 1 uppercase, 1 lowercase, 1 number)
-      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) {
+      if (!PASSWORD_REGEX.test(password)) {
         throw new ApiError(
           ErrorCode.VALIDATION_ERROR,
-          "Password must be at least 8 characters and include uppercase, lowercase, and a number"
+          PASSWORD_REQUIREMENTS_MESSAGE
         );
       }
 
