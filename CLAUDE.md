@@ -122,7 +122,8 @@ bun run test         # Run all tests (webapi + ui + e2e)
 bun run test:bruno        # Run all Bruno API tests
 bun run test:bruno:health # Run Bruno health tests
 bun run test:bruno:auth   # Run Bruno auth tests
-bun run test:bruno:user   # Run Bruno user tests
+bun run test:bruno:user      # Run Bruno user tests
+bun run test:bruno:service   # Run Bruno service tests
 bun run seed:test         # Seed test users for Bruno tests
 ```
 
