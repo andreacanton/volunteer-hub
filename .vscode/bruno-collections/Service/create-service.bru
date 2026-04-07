@@ -1,0 +1,59 @@
+meta {
+  name: Create Service
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/services
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{admin_token}}
+}
+
+body:json {
+  {
+    "name": "Bruno Test Service",
+    "description": "Created by Bruno API tests"
+  }
+}
+
+script:pre-request {
+  const token = bru.getVar("admin_token");
+  if (token) {
+    req.setHeader("Authorization", "Bearer " + token);
+  }
+}
+
+script:post-response {
+  if (res.getStatus() === 200) {
+    const body = res.getBody();
+    bru.setVar("created_service_id", body.data.id);
+  }
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("should return created service", function() {
+    const body = res.getBody();
+    expect(body.success).to.be.true;
+    expect(body.data.name).to.equal('Bruno Test Service');
+    expect(body.data.description).to.equal('Created by Bruno API tests');
+    expect(body.data).to.have.property('id');
+  });
+}
+
+docs {
+  # Create Service
+
+  Tests the POST /services endpoint (admin only).
+
+  **Prerequisites:**
+  - Run login-admin.bru first
+}

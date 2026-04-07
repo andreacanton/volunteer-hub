@@ -1,0 +1,43 @@
+meta {
+  name: Get Service Not Found
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{base_url}}/services/nonexistent-id-12345
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{admin_token}}
+}
+
+script:pre-request {
+  const token = bru.getVar("admin_token");
+  if (token) {
+    req.setHeader("Authorization", "Bearer " + token);
+  }
+}
+
+tests {
+  test("should return 404", function() {
+    expect(res.getStatus()).to.equal(404);
+  });
+
+  test("should have RESOURCE_NOT_FOUND error", function() {
+    const body = res.getBody();
+    expect(body.success).to.be.false;
+    expect(body.error.code).to.equal('RESOURCE_NOT_FOUND');
+  });
+}
+
+docs {
+  # Get Service Not Found
+
+  Verifies that requesting a nonexistent service returns 404.
+
+  **Prerequisites:**
+  - Run login-admin.bru first
+}

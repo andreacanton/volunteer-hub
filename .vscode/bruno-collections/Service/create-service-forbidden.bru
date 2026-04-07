@@ -1,0 +1,59 @@
+meta {
+  name: Create Service Forbidden
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{base_url}}/services
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Should Fail",
+    "description": "Non-admin should not be able to create"
+  }
+}
+
+script:pre-request {
+  // Log in as a volunteer (non-admin) user
+  const baseUrl = bru.getEnvVar("base_url");
+  const password = bru.getEnvVar("test_password");
+
+  const loginRes = await fetch(baseUrl + "/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: "volunteer-test@example.com",
+      password: password
+    })
+  });
+
+  if (loginRes.ok) {
+    const loginBody = await loginRes.json();
+    req.setHeader("Authorization", "Bearer " + loginBody.data.accessToken);
+  }
+}
+
+tests {
+  test("should return 403", function() {
+    expect(res.getStatus()).to.equal(403);
+  });
+
+  test("should have FORBIDDEN error", function() {
+    const body = res.getBody();
+    expect(body.success).to.be.false;
+    expect(body.error.code).to.equal('FORBIDDEN');
+  });
+}
+
+docs {
+  # Create Service Forbidden
+
+  Verifies that a non-admin user cannot create services.
+
+  **Prerequisites:**
+  - Run `bun run seed:test` to create the volunteer-test@example.com user
+}
