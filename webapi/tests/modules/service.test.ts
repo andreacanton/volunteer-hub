@@ -1,5 +1,4 @@
 import { describe, expect, test, beforeAll, afterAll } from "bun:test";
-import { Database } from "bun:sqlite";
 import { mkdtempSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
@@ -20,8 +19,7 @@ import {
   updateService,
   deleteService,
 } from "../../src/modules/service/service.ts";
-import { getDb } from "../../src/database/connection.ts";
-import { closeDb } from "../../src/database/connection.ts";
+import { getDb, closeDb } from "../../src/database/connection.ts";
 
 beforeAll(() => {
   const db = getDb();
@@ -62,7 +60,7 @@ describe("Service - service layer", () => {
 
     expect(services.length).toBeGreaterThanOrEqual(2);
     const names = services.map((s) => s.name);
-    expect(names).toEqual([...names].sort());
+    expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b)));
   });
 
   test("getServiceById returns service when found", () => {
