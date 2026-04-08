@@ -21,6 +21,9 @@ const ServiceResponseSchema = t.Object({
   updatedAt: t.String(),
 });
 
+const IdParamSchema = t.Object({ id: t.String() });
+const SERVICE_TAG = ["Service"] as const;
+
 const CreateServiceRequestSchema = t.Object({
   name: t.String({ minLength: 1, maxLength: 255 }),
   description: t.Optional(t.String({ maxLength: 1000 })),
@@ -44,7 +47,7 @@ export const serviceModule = new Elysia({ prefix: "/services" })
       detail: {
         summary: "List all services",
         description: "Returns all available services",
-        tags: ["Service"],
+        tags: SERVICE_TAG,
       },
       response: {
         200: apiResponseSchema(t.Array(ServiceResponseSchema)),
@@ -62,11 +65,11 @@ export const serviceModule = new Elysia({ prefix: "/services" })
       return success(service);
     },
     {
-      params: t.Object({ id: t.String() }),
+      params: IdParamSchema,
       detail: {
         summary: "Get service by ID",
         description: "Returns a single service by its ID",
-        tags: ["Service"],
+        tags: SERVICE_TAG,
       },
       response: {
         200: apiResponseSchema(ServiceResponseSchema),
@@ -90,7 +93,7 @@ export const serviceModule = new Elysia({ prefix: "/services" })
       body: CreateServiceRequestSchema,
       detail: {
         summary: "Create a service (admin)",
-        tags: ["Service"],
+        tags: SERVICE_TAG,
       },
       response: {
         200: apiResponseSchema(ServiceResponseSchema),
@@ -114,11 +117,11 @@ export const serviceModule = new Elysia({ prefix: "/services" })
       return success(service);
     },
     {
-      params: t.Object({ id: t.String() }),
+      params: IdParamSchema,
       body: UpdateServiceRequestSchema,
       detail: {
         summary: "Update a service (admin)",
-        tags: ["Service"],
+        tags: SERVICE_TAG,
       },
       response: {
         200: apiResponseSchema(ServiceResponseSchema),
@@ -139,10 +142,10 @@ export const serviceModule = new Elysia({ prefix: "/services" })
       return success({ deleted: true });
     },
     {
-      params: t.Object({ id: t.String() }),
+      params: IdParamSchema,
       detail: {
         summary: "Delete a service (admin)",
-        tags: ["Service"],
+        tags: SERVICE_TAG,
       },
       response: {
         200: t.Any(),
