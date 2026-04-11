@@ -14,6 +14,7 @@
  */
 
 import { createUser, getUserByEmail } from "../../webapi/src/modules/auth/service.ts";
+import { createService, getServiceByName } from "../../webapi/src/modules/service/service.ts";
 import { UserRole } from "../../webapi/src/constants/userRole.ts";
 import { closeDb } from "../../webapi/src/database/connection.ts";
 import { getLogger } from "@logtape/logtape";
@@ -97,10 +98,63 @@ async function seedTestUsers() {
   }
 }
 
+// Default services to seed
+const DEFAULT_SERVICES = [
+  { name: "Evening", description: "Evening service shift" },
+  { name: "Breakfast", description: "Breakfast service shift" },
+  { name: "Cooks", description: "Cooking service shift" },
+  { name: "Logistics", description: "Logistics service shift" },
+];
+
+function seedServices() {
+  logger.info("Starting service seeding process");
+
+  let created = 0;
+  let skipped = 0;
+  let errors = 0;
+
+  for (const service of DEFAULT_SERVICES) {
+    try {
+      const existing = getServiceByName(service.name);
+
+      if (existing) {
+        logger.info(`Skipping service ${service.name} - already exists`);
+        skipped++;
+        continue;
+      }
+
+      createService(service);
+      logger.info(`Created service: ${service.name}`);
+      created++;
+    } catch (error) {
+      logger.error(`Failed to create service ${service.name}:`, error);
+      errors++;
+    }
+  }
+
+  console.log("\n=== Service Seeding Summary ===");
+  console.log(`Created: ${created}`);
+  console.log(`Skipped (already exist): ${skipped}`);
+  console.log(`Errors: ${errors}`);
+  console.log(`Total: ${DEFAULT_SERVICES.length}`);
+
+  if (created > 0) {
+    console.log("\n✓ Services ready for Bruno tests");
+  }
+
+  return errors;
+}
+
 // Run the seeding process
 try {
   await seedTestUsers();
+  const serviceErrors = seedServices();
   closeDb();
+
+  if (serviceErrors > 0) {
+    console.error("\n✗ Some services failed to seed. Check logs for details.");
+    process.exit(1);
+  }
 } catch (error) {
   logger.error("Fatal error during seeding:", error);
   console.error("\n✗ Fatal error during seeding:", error);

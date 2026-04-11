@@ -18,6 +18,9 @@
 - Missing `.env` file on fresh checkout — `.env.example` exists but no setup script copies it
 - Migrations must be run manually before e2e tests; no `pretest` script enforces this
 - The `test:e2e` root script does not set up prerequisites (env, migrations, browser install)
+- Dynamic SQL builders using `Record<string, ...>` keys for column names — always check for allowlist; found in PR #16 `applyUserUpdate`
+- `ApiErrorCode` constants in Flutter client lag behind backend `ErrorCode` additions — `AUTH_USER_EXISTS` missing in PR #16
+- `ON DELETE CASCADE` FKs exist on `refresh_tokens` and `password_resets` (confirmed in migrations 003, 004) and `PRAGMA foreign_keys = ON` is set in `connection.ts` — manual child-row deletes in transactions are redundant
 
 ### Onboarding Gaps
 - No `setup.sh` or `bun run setup` script at root level

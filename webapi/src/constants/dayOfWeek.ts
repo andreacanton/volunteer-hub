@@ -1,0 +1,13 @@
+/**
+ * Day of the week enum.
+ * Numeric values (1–7) are stored in DB columns with CHECK constraints.
+ */
+export enum DayOfWeek {
+  MONDAY = 1,
+  TUESDAY = 2,
+  WEDNESDAY = 3,
+  THURSDAY = 4,
+  FRIDAY = 5,
+  SATURDAY = 6,
+  SUNDAY = 7,
+}
